@@ -89,12 +89,18 @@ const sendOTPEmail = async (toEmail, otp, purpose = 'register-verify') => {
     </html>
     `;
 
-    await transporter.sendMail({
-        from: `"Luxé Jewellery" <${process.env.EMAIL_USER}>`,
-        to: toEmail,
-        subject: subjectMap[purpose],
-        html,
-    });
+    try {
+        await transporter.sendMail({
+            from: `"Luxé Jewellery" <${process.env.EMAIL_USER}>`,
+            to: toEmail,
+            subject: subjectMap[purpose],
+            html,
+        });
+        console.log(`✓ OTP sent successfully to ${toEmail}`);
+    } catch (error) {
+        console.error('✘ Nodemailer error in sendOTPEmail:', error.message);
+        throw error; // Re-throw so the controller can handle the failure
+    }
 };
 
 const sendOrderCancellationEmail = async (user, order, type) => {

@@ -58,8 +58,12 @@ exports.sendOtp = async (req, res) => {
             message: `OTP sent successfully to ${email}. It is valid for 10 minutes.`,
         });
     } catch (error) {
-        console.error('sendOtp error:', error);
-        return res.status(500).json({ message: 'Failed to send OTP. Please try again.' });
+        console.error('sendOtp error:', error.message);
+        let message = 'Failed to send OTP. Please try again.';
+        if (error.code === 'EAUTH' || error.message.includes('credentials')) {
+            message = 'Email authentication failed. Please check your App Password on Render.';
+        }
+        return res.status(500).json({ message });
     }
 };
 
