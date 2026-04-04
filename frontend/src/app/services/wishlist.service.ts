@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { Wishlist, Product } from '../models/product.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class WishlistService {
-    private apiUrl = 'http://localhost:9000/api/wishlist';
-    private baseUrl = 'http://localhost:9000';
+    private apiUrl = `${environment.apiUrl}/wishlist`;
+    private baseUrl = environment.baseUrl;
 
     constructor(private http: HttpClient) { }
 

@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { Order, OrderStats } from '../models/product.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class OrderService {
-    private apiUrl = 'http://localhost:9000/api/orders';
-    private paymentUrl = 'http://localhost:9000/api/payment';
-    private baseUrl = 'http://localhost:9000';
+    private apiUrl = `${environment.apiUrl}/orders`;
+    private paymentUrl = `${environment.apiUrl}/payment`;
+    private baseUrl = environment.baseUrl;
 
     constructor(private http: HttpClient) { }
 
