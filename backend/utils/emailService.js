@@ -1,24 +1,6 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-    port: 465, // Use 465 for SSL/TLS
-    secure: true, // Required for 465
-    // Force IPv4 to avoid ENETUNREACH errors on Render
-    family: 4, 
-    dns: {
-        family: 4
-    },
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
-    connectionTimeout: 20000, // 20 seconds
-    greetingTimeout: 20000, 
-    socketTimeout: 30000, // 30 seconds
-    debug: true, // Show detailed SMTP logs
-    logger: true // Log SMTP events
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const generateOTP = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
@@ -97,16 +79,16 @@ const sendOTPEmail = async (toEmail, otp, purpose = 'register-verify') => {
     `;
 
     try {
-        await transporter.sendMail({
-            from: `"Luxé Jewellery" <${process.env.EMAIL_USER}>`,
+        await resend.emails.send({
+            from: `"Luxé Jewellery" <${process.env.EMAIL_FROM}>`,
             to: toEmail,
             subject: subjectMap[purpose],
             html,
         });
         console.log(`✓ OTP sent successfully to ${toEmail}`);
     } catch (error) {
-        console.error('✘ Nodemailer error in sendOTPEmail:', error.message);
-        throw error; // Re-throw so the controller can handle the failure
+        console.error('✘ Resend error in sendOTPEmail:', error.message);
+        throw error;
     }
 };
 
@@ -170,12 +152,17 @@ const sendOrderCancellationEmail = async (user, order, type) => {
     </html>
     `;
 
-    await transporter.sendMail({
-        from: `"Luxé Jewellery" <${process.env.EMAIL_USER}>`,
-        to: user.email,
-        subject,
-        html,
-    });
+    try {
+        await resend.emails.send({
+            from: `"Luxé Jewellery" <${process.env.EMAIL_FROM}>`,
+            to: user.email,
+            subject,
+            html,
+        });
+        console.log(`✅ Order cancellation email sent to ${user.email}`);
+    } catch (error) {
+        console.error(`❌ Failed to send order cancellation email to ${user.email}:`, error);
+    }
 };
 
 const sendOrderConfirmationEmail = async (user, order, pdfBuffer) => {
@@ -226,20 +213,19 @@ const sendOrderConfirmationEmail = async (user, order, pdfBuffer) => {
     `;
 
     try {
-        const info = await transporter.sendMail({
-            from: `"Luxé Jewellery" <${process.env.EMAIL_USER}>`,
+        const info = await resend.emails.send({
+            from: `"Luxé Jewellery" <${process.env.EMAIL_FROM}>`,
             to: user.email,
             subject: `✨ Thank You for Your Order! Invoice #${order._id.toString().slice(-8).toUpperCase()} – Luxé Jewellery`,
             html,
             attachments: [
                 {
                     filename: `Invoice_${order._id.toString().slice(-8).toUpperCase()}.pdf`,
-                    content: pdfBuffer,
-                    contentType: 'application/pdf'
+                    content: pdfBuffer.toString('base64'),
                 }
             ]
         });
-        console.log(`✅ Order confirmation email sent to ${user.email} (ID: ${info.messageId})`);
+        console.log(`✅ Order confirmation email sent to ${user.email} (ID: ${info.id})`);
         return info;
     } catch (error) {
         console.error(`❌ Failed to send order confirmation email to ${user.email}:`, error);
@@ -299,8 +285,8 @@ const sendOrderStatusUpdateEmail = async (user, order) => {
     `;
 
     try {
-        await transporter.sendMail({
-            from: `"Luxé Jewellery" <${process.env.EMAIL_USER}>`,
+        await resend.emails.send({
+            from: `"Luxé Jewellery" <${process.env.EMAIL_FROM}>`,
             to: user.email,
             subject: `🔔 Status Update for Order #${order._id.toString().slice(-8).toUpperCase()} – Luxé Jewellery`,
             html,
@@ -349,9 +335,9 @@ const sendContactEmail = async (contactData) => {
     `;
 
     try {
-        await transporter.sendMail({
-            from: `"Luxé Contact Form" <${process.env.EMAIL_USER}>`,
-            to: process.env.EMAIL_USER, // Send TO the admin
+        await resend.emails.send({
+            from: `"Luxé Contact Form" <${process.env.EMAIL_FROM}>`,
+            to: process.env.EMAIL_FROM, // Send TO the admin
             subject: `📩 New Inquiry: ${subject || 'Contact Form'}`,
             replyTo: email, // Allow admin to reply directly to customer
             html,
@@ -417,8 +403,8 @@ const sendCouponAnnouncementEmail = async (user, coupon) => {
     `;
 
     try {
-        await transporter.sendMail({
-            from: `"Luxé Jewellery" <${process.env.EMAIL_USER}>`,
+        await resend.emails.send({
+            from: `"Luxé Jewellery" <${process.env.EMAIL_FROM}>`,
             to: user.email,
             subject: `🎁 A Special Gift for You: ${discountText} at Luxé Jewellery`,
             html,
@@ -430,3 +416,4 @@ const sendCouponAnnouncementEmail = async (user, coupon) => {
 };
 
 module.exports = { generateOTP, sendOTPEmail, sendOrderCancellationEmail, sendOrderConfirmationEmail, sendContactEmail, sendCouponAnnouncementEmail, sendOrderStatusUpdateEmail };
+
