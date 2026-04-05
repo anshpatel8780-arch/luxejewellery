@@ -283,6 +283,10 @@ const sendOrderStatusUpdateEmail = async (user, order) => {
                   <strong>Order ID:</strong> #${order._id.toString().slice(-8).toUpperCase()}<br/>
                   <strong>New Status:</strong> <span style="color:${config.color};font-weight:700;">${order.status.toUpperCase()}</span>
                   </p>
+                  
+                  <div style="text-align:center;margin-top:30px;">
+                    <a href="https://luxejewellery-anshpatel8780-archs-projects.vercel.app/dashboard" style="background:#2c1810;color:#ffffff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">View Order Details</a>
+                  </div>
                 </td>
               </tr>
               <tr>
