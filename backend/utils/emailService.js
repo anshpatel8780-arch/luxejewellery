@@ -1,6 +1,10 @@
 const { Resend } = require('resend');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resendApiKey = process.env.RESEND_API_KEY;
+if (!resendApiKey) {
+    console.error('❌ ERROR: RESEND_API_KEY is missing in your environment variables!');
+}
+const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 const generateOTP = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
