@@ -83,7 +83,7 @@ const sendOTPEmail = async (toEmail, otp, purpose = 'register-verify') => {
                 'content-type': 'application/json'
             },
             body: JSON.stringify({
-                sender: { name: "Luxé Jewellery", email: process.env.EMAIL_FROM },
+                sender: { name: "Luxe Jewellery", email: process.env.EMAIL_FROM },
                 to: [{ email: toEmail }],
                 subject: subjectMap[purpose],
                 htmlContent: html
@@ -168,7 +168,7 @@ const sendOrderCancellationEmail = async (user, order, type) => {
                 'content-type': 'application/json'
             },
             body: JSON.stringify({
-                sender: { name: "Luxé Jewellery", email: process.env.EMAIL_FROM },
+                sender: { name: "Luxe Jewellery", email: process.env.EMAIL_FROM },
                 to: [{ email: user.email }],
                 subject: subject,
                 htmlContent: html
@@ -229,7 +229,7 @@ const sendOrderConfirmationEmail = async (user, order, pdfBuffer) => {
                 'content-type': 'application/json'
             },
             body: JSON.stringify({
-                sender: { name: "Luxé Jewellery", email: process.env.EMAIL_FROM },
+                sender: { name: "Luxe Jewellery", email: process.env.EMAIL_FROM },
                 to: [{ email: user.email }],
                 subject: `✨ Order Confirmation #${order._id.toString().slice(-8).toUpperCase()}`,
                 htmlContent: html,
@@ -311,7 +311,7 @@ const sendOrderStatusUpdateEmail = async (user, order) => {
                 'content-type': 'application/json'
             },
             body: JSON.stringify({
-                sender: { name: "Luxé Jewellery", email: process.env.EMAIL_FROM },
+                sender: { name: "Luxe Jewellery", email: process.env.EMAIL_FROM },
                 to: [{ email: user.email }],
                 subject: `🔔 Status Update: Order #${order._id.toString().slice(-8).toUpperCase()}`,
                 htmlContent: html
@@ -365,7 +365,7 @@ const sendContactEmail = async (contactData) => {
                 'content-type': 'application/json'
             },
             body: JSON.stringify({
-                sender: { name: "Luxé Contact Form", email: process.env.EMAIL_FROM },
+                sender: { name: "Luxe Contact Form", email: process.env.EMAIL_FROM },
                 to: [{ email: process.env.EMAIL_FROM }],
                 replyTo: { email: email },
                 subject: `📩 New Inquiry: ${subject || 'Contact Form'}`,
@@ -421,7 +421,7 @@ const sendCouponAnnouncementEmail = async (user, coupon) => {
                 'content-type': 'application/json'
             },
             body: JSON.stringify({
-                sender: { name: "Luxé Jewellery", email: process.env.EMAIL_FROM },
+                sender: { name: "Luxe Jewellery", email: process.env.EMAIL_FROM },
                 to: [{ email: user.email }],
                 subject: `🎁 A Special Gift: ${discountText} at Luxé Jewellery`,
                 htmlContent: html
