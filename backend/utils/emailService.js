@@ -1,10 +1,13 @@
-const { Resend } = require('resend');
+const SibApiV3Sdk = require('@getbrevo/brevo');
 
-const resendApiKey = process.env.RESEND_API_KEY;
-if (!resendApiKey) {
-    console.error('❌ ERROR: RESEND_API_KEY is missing in your environment variables!');
+// Initialize Brevo API client
+let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+let apiKey = apiInstance.authentications['apiKey'];
+apiKey.apiKey = process.env.BREVO_API_KEY;
+
+if (!apiKey.apiKey) {
+    console.error('❌ ERROR: BREVO_API_KEY is missing in your environment variables!');
 }
-const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 const generateOTP = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
@@ -82,16 +85,17 @@ const sendOTPEmail = async (toEmail, otp, purpose = 'register-verify') => {
     </html>
     `;
 
+    let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+    sendSmtpEmail.subject = subjectMap[purpose];
+    sendSmtpEmail.htmlContent = html;
+    sendSmtpEmail.sender = { "name": "Luxé Jewellery", "email": process.env.EMAIL_FROM };
+    sendSmtpEmail.to = [{ "email": toEmail }];
+
     try {
-        await resend.emails.send({
-            from: `"Luxé Jewellery" <${process.env.EMAIL_FROM}>`,
-            to: toEmail,
-            subject: subjectMap[purpose],
-            html,
-        });
-        console.log(`✓ OTP sent successfully to ${toEmail}`);
+        await apiInstance.sendTransacEmail(sendSmtpEmail);
+        console.log(`✓ OTP sent successfully to ${toEmail} via Brevo`);
     } catch (error) {
-        console.error('✘ Resend error in sendOTPEmail:', error.message);
+        console.error('✘ Brevo error in sendOTPEmail:', error.message);
         throw error;
     }
 };
@@ -156,16 +160,17 @@ const sendOrderCancellationEmail = async (user, order, type) => {
     </html>
     `;
 
+    let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+    sendSmtpEmail.subject = subject;
+    sendSmtpEmail.htmlContent = html;
+    sendSmtpEmail.sender = { "name": "Luxé Jewellery", "email": process.env.EMAIL_FROM };
+    sendSmtpEmail.to = [{ "email": user.email }];
+
     try {
-        await resend.emails.send({
-            from: `"Luxé Jewellery" <${process.env.EMAIL_FROM}>`,
-            to: user.email,
-            subject,
-            html,
-        });
-        console.log(`✅ Order cancellation email sent to ${user.email}`);
+        await apiInstance.sendTransacEmail(sendSmtpEmail);
+        console.log(`✅ Order cancellation email sent to ${user.email} via Brevo`);
     } catch (error) {
-        console.error(`❌ Failed to send order cancellation email to ${user.email}:`, error);
+        console.error(`❌ Failed to send order cancellation email to ${user.email} via Brevo:`, error.message);
     }
 };
 
@@ -216,23 +221,22 @@ const sendOrderConfirmationEmail = async (user, order, pdfBuffer) => {
     </html>
     `;
 
+    let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+    sendSmtpEmail.subject = `✨ Thank You for Your Order! Invoice #${order._id.toString().slice(-8).toUpperCase()} – Luxé Jewellery`;
+    sendSmtpEmail.htmlContent = html;
+    sendSmtpEmail.sender = { "name": "Luxé Jewellery", "email": process.env.EMAIL_FROM };
+    sendSmtpEmail.to = [{ "email": user.email }];
+    sendSmtpEmail.attachment = [{
+        "name": `Invoice_${order._id.toString().slice(-8).toUpperCase()}.pdf`,
+        "content": pdfBuffer.toString('base64')
+    }];
+
     try {
-        const info = await resend.emails.send({
-            from: `"Luxé Jewellery" <${process.env.EMAIL_FROM}>`,
-            to: user.email,
-            subject: `✨ Thank You for Your Order! Invoice #${order._id.toString().slice(-8).toUpperCase()} – Luxé Jewellery`,
-            html,
-            attachments: [
-                {
-                    filename: `Invoice_${order._id.toString().slice(-8).toUpperCase()}.pdf`,
-                    content: pdfBuffer.toString('base64'),
-                }
-            ]
-        });
-        console.log(`✅ Order confirmation email sent to ${user.email} (ID: ${info.id})`);
+        const info = await apiInstance.sendTransacEmail(sendSmtpEmail);
+        console.log(`✅ Order confirmation email sent to ${user.email} (ID: ${info.messageId}) via Brevo`);
         return info;
     } catch (error) {
-        console.error(`❌ Failed to send order confirmation email to ${user.email}:`, error);
+        console.error(`❌ Failed to send order confirmation email to ${user.email} via Brevo:`, error.message);
         throw error;
     }
 };
@@ -271,7 +275,7 @@ const sendOrderStatusUpdateEmail = async (user, order) => {
                   </p>
                   
                   <div style="text-align:center;margin-top:30px;">
-                    <a href="http://localhost:4200/dashboard" style="background:#2c1810;color:#ffffff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">View Order Details</a>
+                    <a href="https://luxejewellery-anshpatel8780-archs-projects.vercel.app/dashboard" style="background:#2c1810;color:#ffffff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">View Order Details</a>
                   </div>
                 </td>
               </tr>
@@ -288,16 +292,17 @@ const sendOrderStatusUpdateEmail = async (user, order) => {
     </html>
     `;
 
+    let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+    sendSmtpEmail.subject = `🔔 Status Update for Order #${order._id.toString().slice(-8).toUpperCase()} – Luxé Jewellery`;
+    sendSmtpEmail.htmlContent = html;
+    sendSmtpEmail.sender = { "name": "Luxé Jewellery", "email": process.env.EMAIL_FROM };
+    sendSmtpEmail.to = [{ "email": user.email }];
+
     try {
-        await resend.emails.send({
-            from: `"Luxé Jewellery" <${process.env.EMAIL_FROM}>`,
-            to: user.email,
-            subject: `🔔 Status Update for Order #${order._id.toString().slice(-8).toUpperCase()} – Luxé Jewellery`,
-            html,
-        });
-        console.log(`✅ Status update email (${order.status}) sent to ${user.email}`);
+        await apiInstance.sendTransacEmail(sendSmtpEmail);
+        console.log(`✅ Status update email (${order.status}) sent to ${user.email} via Brevo`);
     } catch (err) {
-        console.error(`❌ Failed to send status update email:`, err);
+        console.error(`❌ Failed to send status update email via Brevo:`, err.message);
     }
 };
 
@@ -338,24 +343,26 @@ const sendContactEmail = async (contactData) => {
     </html>
     `;
 
+    let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+    sendSmtpEmail.subject = `📩 New Inquiry: ${subject || 'Contact Form'}`;
+    sendSmtpEmail.htmlContent = html;
+    sendSmtpEmail.sender = { "name": "Luxé Contact Form", "email": process.env.EMAIL_FROM };
+    sendSmtpEmail.to = [{ "email": process.env.EMAIL_FROM }];
+    sendSmtpEmail.replyTo = { "email": email };
+
     try {
-        await resend.emails.send({
-            from: `"Luxé Contact Form" <${process.env.EMAIL_FROM}>`,
-            to: process.env.EMAIL_FROM, // Send TO the admin
-            subject: `📩 New Inquiry: ${subject || 'Contact Form'}`,
-            replyTo: email, // Allow admin to reply directly to customer
-            html,
-        });
-        console.log(`✅ Contact email sent from ${email} to admin`);
+        await apiInstance.sendTransacEmail(sendSmtpEmail);
+        console.log(`✅ Contact email sent from ${email} to admin via Brevo`);
     } catch (error) {
-        console.error(`❌ Failed to send contact email:`, error);
+        console.error(`❌ Failed to send contact email via Brevo:`, error.message);
         throw error;
     }
 };
 
 const sendCouponAnnouncementEmail = async (user, coupon) => {
     const discountText = coupon.discountType === 'percentage' ? `${coupon.discountValue}% OFF` : `₹${coupon.discountValue} OFF`;
-    const minOrderText = coupon.minOrderAmount > 0 ? `on orders above ₹${coupon.minOrderAmount.toLocaleString()}` : 'on all orders';
+    const minOrderAmountFormatted = coupon.minOrderAmount ? coupon.minOrderAmount.toLocaleString() : '0';
+    const minOrderText = coupon.minOrderAmount > 0 ? `on orders above ₹${minOrderAmountFormatted}` : 'on all orders';
     
     const html = `
     <!DOCTYPE html>
@@ -389,7 +396,7 @@ const sendCouponAnnouncementEmail = async (user, coupon) => {
 
                   <p style="color:#777;font-size:13px;margin-bottom:32px;">Valid until: <strong>${new Date(coupon.expiryDate).toLocaleDateString()}</strong></p>
                   
-                  <a href="http://localhost:4200/shop" style="display:inline-block;background:#c9a96e;color:#000;padding:16px 40px;border-radius:50px;text-decoration:none;font-weight:700;font-size:16px;letter-spacing:1px;transition:0.3s;">SHOP THE COLLECTION</a>
+                  <a href="https://luxejewellery-anshpatel8780-archs-projects.vercel.app/shop" style="display:inline-block;background:#c9a96e;color:#000;padding:16px 40px;border-radius:50px;text-decoration:none;font-weight:700;font-size:16px;letter-spacing:1px;transition:0.3s;">SHOP THE COLLECTION</a>
                 </td>
               </tr>
               <tr>
@@ -406,18 +413,18 @@ const sendCouponAnnouncementEmail = async (user, coupon) => {
     </html>
     `;
 
+    let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+    sendSmtpEmail.subject = `🎁 A Special Gift for You: ${discountText} at Luxé Jewellery`;
+    sendSmtpEmail.htmlContent = html;
+    sendSmtpEmail.sender = { "name": "Luxé Jewellery", "email": process.env.EMAIL_FROM };
+    sendSmtpEmail.to = [{ "email": user.email }];
+
     try {
-        await resend.emails.send({
-            from: `"Luxé Jewellery" <${process.env.EMAIL_FROM}>`,
-            to: user.email,
-            subject: `🎁 A Special Gift for You: ${discountText} at Luxé Jewellery`,
-            html,
-        });
-        console.log(`✅ Coupon mail sent to ${user.email}`);
+        await apiInstance.sendTransacEmail(sendSmtpEmail);
+        console.log(`✅ Coupon mail sent to ${user.email} via Brevo`);
     } catch (error) {
-        console.error(`❌ Failed to send coupon mail to ${user.email}:`, error);
+        console.error(`❌ Failed to send coupon mail to ${user.email} via Brevo:`, error.message);
     }
 };
 
 module.exports = { generateOTP, sendOTPEmail, sendOrderCancellationEmail, sendOrderConfirmationEmail, sendContactEmail, sendCouponAnnouncementEmail, sendOrderStatusUpdateEmail };
-
