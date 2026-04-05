@@ -1,14 +1,3 @@
-const SibApiV3Sdk = require('@getbrevo/brevo');
-
-// Initialize Brevo API client
-let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-let apiKey = apiInstance.authentications['apiKey'];
-apiKey.apiKey = process.env.BREVO_API_KEY;
-
-if (!apiKey.apiKey) {
-    console.error('❌ ERROR: BREVO_API_KEY is missing in your environment variables!');
-}
-
 const generateOTP = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
@@ -85,17 +74,30 @@ const sendOTPEmail = async (toEmail, otp, purpose = 'register-verify') => {
     </html>
     `;
 
-    let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
-    sendSmtpEmail.subject = subjectMap[purpose];
-    sendSmtpEmail.htmlContent = html;
-    sendSmtpEmail.sender = { "name": "Luxé Jewellery", "email": process.env.EMAIL_FROM };
-    sendSmtpEmail.to = [{ "email": toEmail }];
-
     try {
-        await apiInstance.sendTransacEmail(sendSmtpEmail);
-        console.log(`✓ OTP sent successfully to ${toEmail} via Brevo`);
+        const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'api-key': process.env.BREVO_API_KEY,
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                sender: { name: "Luxé Jewellery", email: process.env.EMAIL_FROM },
+                to: [{ email: toEmail }],
+                subject: subjectMap[purpose],
+                htmlContent: html
+            })
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Brevo API error');
+        }
+
+        console.log(`✓ OTP sent successfully to ${toEmail} via Brevo HTTP API`);
     } catch (error) {
-        console.error('✘ Brevo error in sendOTPEmail:', error.message);
+        console.error('✘ Brevo API error in sendOTPEmail:', error.message);
         throw error;
     }
 };
@@ -142,9 +144,6 @@ const sendOrderCancellationEmail = async (user, order, type) => {
                 <td style="padding:40px 40px 24px;">
                   <h2 style="color:#2c1810;margin:0 0 16px;font-size:22px;">${headline}</h2>
                   <p style="color:#555;line-height:1.7;margin:0 0 28px;font-size:15px;">Hi ${user.name},<br/><br/>${body}</p>
-                  <p style="color:#888;font-size:13px;text-align:center;margin:20px 0 0;">
-                    If you have any questions, please contact our support team.
-                  </p>
                 </td>
               </tr>
               <tr>
@@ -160,17 +159,24 @@ const sendOrderCancellationEmail = async (user, order, type) => {
     </html>
     `;
 
-    let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
-    sendSmtpEmail.subject = subject;
-    sendSmtpEmail.htmlContent = html;
-    sendSmtpEmail.sender = { "name": "Luxé Jewellery", "email": process.env.EMAIL_FROM };
-    sendSmtpEmail.to = [{ "email": user.email }];
-
     try {
-        await apiInstance.sendTransacEmail(sendSmtpEmail);
-        console.log(`✅ Order cancellation email sent to ${user.email} via Brevo`);
+        await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'api-key': process.env.BREVO_API_KEY,
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                sender: { name: "Luxé Jewellery", email: process.env.EMAIL_FROM },
+                to: [{ email: user.email }],
+                subject: subject,
+                htmlContent: html
+            })
+        });
+        console.log(`✅ Order cancellation email sent to ${user.email}`);
     } catch (error) {
-        console.error(`❌ Failed to send order cancellation email to ${user.email} via Brevo:`, error.message);
+        console.error(`❌ Failed to send order cancellation email:`, error.message);
     }
 };
 
@@ -193,19 +199,12 @@ const sendOrderConfirmationEmail = async (user, order, pdfBuffer) => {
                   <h2 style="color:#2c1810;margin:0 0 16px;font-size:24px;">Thank You so much for your order! 🙏</h2>
                   <p style="color:#555;line-height:1.8;margin:0 0 28px;font-size:16px;">Hi ${user.name},<br/><br/>
                   We are absolutely delighted to confirm your order <strong>#${order._id.toString().slice(-8).toUpperCase()}</strong>! 💎<br/><br/>
-                  At <strong>Luxé Jewellery</strong>, we strive to bring elegance and timeless beauty to your collection, and we're honored that you chose us for your purchase. Our team is already working hard to prepare your items for safe delivery.</p>
+                  At <strong>Luxé Jewellery</strong>, we strive to bring elegance and timeless beauty to your collection, and we're honored that you chose us for your purchase.</p>
                   
                   <div style="background:#fdf6e3;border:2px solid #c9a96e;border-radius:12px;padding:24px;margin-bottom:28px;text-align:center;">
                     <p style="margin:0 0 8px;color:#8b6914;font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:600;">Order Total</p>
                     <p style="margin:0;color:#2c1810;font-size:28px;font-weight:800;">₹${order.totalPrice.toLocaleString()}</p>
-                    <p style="margin:8px 0 0;color:#555;font-size:14px;">Status: <strong>Order Confirmed</strong></p>
                   </div>
-
-                  <p style="color:#555;line-height:1.7;margin:0 0 20px;font-size:15px;">
-                    Please find your <strong>official Amazon-style Tax Invoice</strong> attached to this email. You can also track your order directly from your dashboard.
-                  </p>
-
-                  <p style="color:#2c1810;font-weight:600;margin:30px 0 0;font-size:15px;">Warm regards,<br/>The Luxé Jewellery Team</p>
                 </td>
               </tr>
               <tr>
@@ -221,22 +220,33 @@ const sendOrderConfirmationEmail = async (user, order, pdfBuffer) => {
     </html>
     `;
 
-    let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
-    sendSmtpEmail.subject = `✨ Thank You for Your Order! Invoice #${order._id.toString().slice(-8).toUpperCase()} – Luxé Jewellery`;
-    sendSmtpEmail.htmlContent = html;
-    sendSmtpEmail.sender = { "name": "Luxé Jewellery", "email": process.env.EMAIL_FROM };
-    sendSmtpEmail.to = [{ "email": user.email }];
-    sendSmtpEmail.attachment = [{
-        "name": `Invoice_${order._id.toString().slice(-8).toUpperCase()}.pdf`,
-        "content": pdfBuffer.toString('base64')
-    }];
-
     try {
-        const info = await apiInstance.sendTransacEmail(sendSmtpEmail);
-        console.log(`✅ Order confirmation email sent to ${user.email} (ID: ${info.messageId}) via Brevo`);
-        return info;
+        const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'api-key': process.env.BREVO_API_KEY,
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                sender: { name: "Luxé Jewellery", email: process.env.EMAIL_FROM },
+                to: [{ email: user.email }],
+                subject: `✨ Order Confirmation #${order._id.toString().slice(-8).toUpperCase()}`,
+                htmlContent: html,
+                attachment: [{
+                    name: `Invoice_${order._id.toString().slice(-8).toUpperCase()}.pdf`,
+                    content: pdfBuffer.toString('base64')
+                }]
+            })
+        });
+
+        if (!response.ok) {
+            console.error('✘ Brevo attachment error:', await response.text());
+        }
+
+        console.log(`✅ Order confirmation email sent to ${user.email} via Brevo HTTP`);
     } catch (error) {
-        console.error(`❌ Failed to send order confirmation email to ${user.email} via Brevo:`, error.message);
+        console.error(`❌ Failed to send order confirmation:`, error.message);
         throw error;
     }
 };
@@ -273,10 +283,6 @@ const sendOrderStatusUpdateEmail = async (user, order) => {
                   <strong>Order ID:</strong> #${order._id.toString().slice(-8).toUpperCase()}<br/>
                   <strong>New Status:</strong> <span style="color:${config.color};font-weight:700;">${order.status.toUpperCase()}</span>
                   </p>
-                  
-                  <div style="text-align:center;margin-top:30px;">
-                    <a href="https://luxejewellery-anshpatel8780-archs-projects.vercel.app/dashboard" style="background:#2c1810;color:#ffffff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">View Order Details</a>
-                  </div>
                 </td>
               </tr>
               <tr>
@@ -292,17 +298,24 @@ const sendOrderStatusUpdateEmail = async (user, order) => {
     </html>
     `;
 
-    let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
-    sendSmtpEmail.subject = `🔔 Status Update for Order #${order._id.toString().slice(-8).toUpperCase()} – Luxé Jewellery`;
-    sendSmtpEmail.htmlContent = html;
-    sendSmtpEmail.sender = { "name": "Luxé Jewellery", "email": process.env.EMAIL_FROM };
-    sendSmtpEmail.to = [{ "email": user.email }];
-
     try {
-        await apiInstance.sendTransacEmail(sendSmtpEmail);
-        console.log(`✅ Status update email (${order.status}) sent to ${user.email} via Brevo`);
+        await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'api-key': process.env.BREVO_API_KEY,
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                sender: { name: "Luxé Jewellery", email: process.env.EMAIL_FROM },
+                to: [{ email: user.email }],
+                subject: `🔔 Status Update: Order #${order._id.toString().slice(-8).toUpperCase()}`,
+                htmlContent: html
+            })
+        });
+        console.log(`✅ Status update email (${order.status}) sent via Brevo HTTP`);
     } catch (err) {
-        console.error(`❌ Failed to send status update email via Brevo:`, err.message);
+        console.error(`❌ Failed to send status update:`, err.message);
     }
 };
 
@@ -325,14 +338,10 @@ const sendContactEmail = async (contactData) => {
               <tr>
                 <td style="padding:40px 40px 24px;">
                   <h2 style="color:#2c1810;margin:0 0 16px;font-size:20px;">Customer Message Received</h2>
-                  <div style="background:#f9f5f0;border-radius:8px;padding:20px;margin-bottom:24px;">
-                    <p style="margin:0 0 8px;font-size:14px;color:#555;"><strong>From:</strong> ${name} (${email})</p>
-                    <p style="margin:0 0 8px;font-size:14px;color:#555;"><strong>Subject:</strong> ${subject || 'No Subject'}</p>
-                    <p style="margin:16px 0 0;font-size:15px;color:#2c1810;line-height:1.6;border-top:1px solid #ddd;padding-top:16px;">
-                      ${message.replace(/\n/g, '<br/>')}
-                    </p>
-                  </div>
-                  <p style="color:#888;font-size:13px;">This message was sent via the Luxé Jewellery Contact Form.</p>
+                  <p style="margin:0 0 8px;font-size:14px;color:#555;"><strong>From:</strong> ${name} (${email})</p>
+                  <p style="margin:16px 0 0;font-size:15px;color:#2c1810;line-height:1.6;border-top:1px solid #ddd;padding-top:16px;">
+                    ${message.replace(/\n/g, '<br/>')}
+                  </p>
                 </td>
               </tr>
             </table>
@@ -343,26 +352,31 @@ const sendContactEmail = async (contactData) => {
     </html>
     `;
 
-    let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
-    sendSmtpEmail.subject = `📩 New Inquiry: ${subject || 'Contact Form'}`;
-    sendSmtpEmail.htmlContent = html;
-    sendSmtpEmail.sender = { "name": "Luxé Contact Form", "email": process.env.EMAIL_FROM };
-    sendSmtpEmail.to = [{ "email": process.env.EMAIL_FROM }];
-    sendSmtpEmail.replyTo = { "email": email };
-
     try {
-        await apiInstance.sendTransacEmail(sendSmtpEmail);
-        console.log(`✅ Contact email sent from ${email} to admin via Brevo`);
+        await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'api-key': process.env.BREVO_API_KEY,
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                sender: { name: "Luxé Contact Form", email: process.env.EMAIL_FROM },
+                to: [{ email: process.env.EMAIL_FROM }],
+                replyTo: { email: email },
+                subject: `📩 New Inquiry: ${subject || 'Contact Form'}`,
+                htmlContent: html
+            })
+        });
+        console.log(`✅ Contact email sent via Brevo HTTP`);
     } catch (error) {
-        console.error(`❌ Failed to send contact email via Brevo:`, error.message);
+        console.error(`❌ Failed to send contact email:`, error.message);
         throw error;
     }
 };
 
 const sendCouponAnnouncementEmail = async (user, coupon) => {
     const discountText = coupon.discountType === 'percentage' ? `${coupon.discountValue}% OFF` : `₹${coupon.discountValue} OFF`;
-    const minOrderAmountFormatted = coupon.minOrderAmount ? coupon.minOrderAmount.toLocaleString() : '0';
-    const minOrderText = coupon.minOrderAmount > 0 ? `on orders above ₹${minOrderAmountFormatted}` : 'on all orders';
     
     const html = `
     <!DOCTYPE html>
@@ -375,34 +389,15 @@ const sendCouponAnnouncementEmail = async (user, coupon) => {
               <tr>
                 <td style="background:linear-gradient(135deg,#c9a96e 0%,#8b6914 100%);padding:40px;text-align:center;">
                   <h1 style="color:#ffffff;margin:0;font-size:28px;letter-spacing:4px;font-weight:800;text-transform:uppercase;">💎 Luxé Exclusive</h1>
-                  <p style="color:rgba(255,255,255,0.9);margin:10px 0 0;font-size:14px;letter-spacing:2px;">AN UNMISSABLE OFFER FOR YOU</p>
                 </td>
               </tr>
               <tr>
                 <td style="padding:40px;text-align:center;">
                   <h2 style="color:#c9a96e;margin:0 0 20px;font-size:24px;font-weight:600;">Hi ${user.name},</h2>
-                  <p style="color:#aaa;line-height:1.8;margin:0 0 32px;font-size:16px;">We're excited to share an exclusive invitation with you! Discover our latest collection and enjoy an exceptional discount on your next purchase.</p>
-                  
-                  <div style="position:relative;background:#262626;border:2px dashed #c9a96e;border-radius:16px;padding:32px;margin-bottom:32px;">
-                    <p style="margin:0 0 8px;color:#c9a96e;font-size:12px;letter-spacing:3px;text-transform:uppercase;font-weight:700;">Special Treat</p>
+                  <div style="background:#262626;border:2px dashed #c9a96e;border-radius:16px;padding:32px;">
                     <h3 style="margin:0;color:#ffffff;font-size:42px;font-weight:800;">${discountText}</h3>
-                    <p style="margin:8px 0 24px;color:#888;font-size:14px;">${minOrderText}</p>
-                    
-                    <div style="background:#000;border-radius:8px;padding:16px;display:inline-block;border:1px solid #444;">
-                      <span style="color:#c9a96e;font-size:12px;display:block;margin-bottom:4px;letter-spacing:1px;text-transform:uppercase;">PROMO CODE</span>
-                      <span style="color:#ffffff;font-size:24px;font-weight:700;letter-spacing:4px;">${coupon.code}</span>
-                    </div>
+                    <p style="margin:20px 0;color:#ffffff;font-size:24px;font-weight:700;letter-spacing:4px;">CODE: ${coupon.code}</p>
                   </div>
-
-                  <p style="color:#777;font-size:13px;margin-bottom:32px;">Valid until: <strong>${new Date(coupon.expiryDate).toLocaleDateString()}</strong></p>
-                  
-                  <a href="https://luxejewellery-anshpatel8780-archs-projects.vercel.app/shop" style="display:inline-block;background:#c9a96e;color:#000;padding:16px 40px;border-radius:50px;text-decoration:none;font-weight:700;font-size:16px;letter-spacing:1px;transition:0.3s;">SHOP THE COLLECTION</a>
-                </td>
-              </tr>
-              <tr>
-                <td style="background:#111;padding:30px;text-align:center;border-top:1px solid #333;">
-                  <p style="margin:0;color:#555;font-size:12px;letter-spacing:1px;">© ${new Date().getFullYear()} LUXÉ JEWELLERY. ALL RIGHTS RESERVED.</p>
-                  <p style="margin:10px 0 0;color:#444;font-size:11px;line-height:1.5;">You are receiving this email as a registered member of Luxé Jewellery.<br/>To manage your notifications, please visit your account dashboard.</p>
                 </td>
               </tr>
             </table>
@@ -413,17 +408,24 @@ const sendCouponAnnouncementEmail = async (user, coupon) => {
     </html>
     `;
 
-    let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
-    sendSmtpEmail.subject = `🎁 A Special Gift for You: ${discountText} at Luxé Jewellery`;
-    sendSmtpEmail.htmlContent = html;
-    sendSmtpEmail.sender = { "name": "Luxé Jewellery", "email": process.env.EMAIL_FROM };
-    sendSmtpEmail.to = [{ "email": user.email }];
-
     try {
-        await apiInstance.sendTransacEmail(sendSmtpEmail);
-        console.log(`✅ Coupon mail sent to ${user.email} via Brevo`);
+        await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'api-key': process.env.BREVO_API_KEY,
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                sender: { name: "Luxé Jewellery", email: process.env.EMAIL_FROM },
+                to: [{ email: user.email }],
+                subject: `🎁 A Special Gift: ${discountText} at Luxé Jewellery`,
+                htmlContent: html
+            })
+        });
+        console.log(`✅ Coupon mail sent via Brevo HTTP`);
     } catch (error) {
-        console.error(`❌ Failed to send coupon mail to ${user.email} via Brevo:`, error.message);
+        console.error(`❌ Failed to send coupon mail:`, error.message);
     }
 };
 
