@@ -23,13 +23,13 @@ const app = express();
 
 // 1. Validate environment variables at startup (Strict for Production)
 const validateEnv = () => {
-    const required = ['MONGO_URI', 'JWT_SECRET', 'FRONTEND_URL'];
-    const missing = required.filter(key => !process.env[key]);
-    
-    if (missing.length > 0) {
-        console.error('\x1b[31m%s\x1b[0m', `FATAL ERROR: MISSING REQUIRED ENV VARIABLES: ${missing.join(', ')}`);
-        process.exit(1);
-    }
+  const required = ['MONGO_URI', 'JWT_SECRET', 'FRONTEND_URL'];
+  const missing = required.filter(key => !process.env[key]);
+
+  if (missing.length > 0) {
+    console.error('\x1b[31m%s\x1b[0m', `FATAL ERROR: MISSING REQUIRED ENV VARIABLES: ${missing.join(', ')}`);
+    process.exit(1);
+  }
 };
 validateEnv();
 
@@ -37,28 +37,28 @@ validateEnv();
 // 2. Optimized CORS (Allows Local Dev + Production Frontend)
 const allowedOrigins = ['http://localhost:4200', process.env.FRONTEND_URL];
 const corsOptions = {
-    origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps or curl)
-        if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
-            callback(null, true);
-        } else {
-            callback(new Error('CORS Policy: Access denied from this origin.'));
-        }
-    },
-    credentials: true
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS Policy: Access denied from this origin.'));
+    }
+  },
+  credentials: true
 };
 app.use(cors(corsOptions));
 app.use(express.json());
 
 // Request logging middleware
 app.use((req, res, next) => {
-    const start = Date.now();
-    res.on('finish', () => {
-        const duration = Date.now() - start;
-        console.log(`${req.method} ${req.originalUrl} ${res.statusCode} - ${duration}ms`);
-    });
-    next();
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    console.log(`${req.method} ${req.originalUrl} ${res.statusCode} - ${duration}ms`);
+  });
+  next();
 });
 
 // Validate Cloudinary config
@@ -80,8 +80,8 @@ app.use('/api/chat', chatRoutes);
 
 // Health check (Secure - No secrets exposed)
 app.get('/', (req, res) => {
-  res.json({ 
-    status: 'online', 
+  res.json({
+    status: 'online',
     timestamp: new Date().toISOString(),
     database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
     environment: process.env.NODE_ENV || 'development'

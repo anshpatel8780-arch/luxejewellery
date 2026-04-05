@@ -11,7 +11,7 @@ Before deploying, you **MUST** set the following environment variables in the Re
 | `NODE_ENV` | `production` |
 | `MONGO_URI` | Your MongoDB Atlas connection string |
 | `JWT_SECRET` | A long, random string for auth security |
-| `FRONTEND_URL` | The URL of your deployed frontend (e.g., `https://luxejewels.vercel.app`) |
+| `FRONTEND_URL` | `https://luxejewellery-anshpatel8780-archs-projects.vercel.app` |
 | `CLOUDINARY_CLOUD_NAME` | Your Cloudinary Cloud Name |
 | `CLOUDINARY_API_KEY` | Your Cloudinary API Key |
 | `CLOUDINARY_API_SECRET` | Your Cloudinary API Secret |
@@ -34,7 +34,7 @@ Before deploying, you **MUST** set the following environment variables in the Re
 - **DB Safety**: Fallback to in-memory database is disabled in production to ensure data integrity.
 
 ## ✅ Health Check
-Once deployed, visit your Render URL (e.g., `https://luxejewellery.onrender.com/`). You should see a JSON response:
+Once deployed, visit your Render URL. You should see a JSON response:
 ```json
 {
   "status": "online",
