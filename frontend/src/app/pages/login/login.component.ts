@@ -18,15 +18,15 @@ import { AuthService } from '../../services/auth.service';
           <p class="premium-sub">Sign in to your heritage of elegance</p>
         </div>
         
-        <form (ngSubmit)="login()">
+        <form (ngSubmit)="login()" autocomplete="off">
           <div class="form-group">
             <label>Email Address</label>
-            <input type="email" [(ngModel)]="email" name="email" placeholder="your@email.com" required>
+            <input type="email" [(ngModel)]="email" name="email" placeholder="your@email.com" required autocomplete="off">
           </div>
           
           <div class="form-group" style="margin-bottom: 8px;">
             <label>Password</label>
-            <input type="password" [(ngModel)]="password" name="password" placeholder="••••••••" required>
+            <input type="password" [(ngModel)]="password" name="password" placeholder="••••••••" required autocomplete="new-password">
           </div>
           
           <div class="forgot-link-row">
