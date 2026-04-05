@@ -34,7 +34,7 @@ Before deploying, you **MUST** set the following environment variables in the Re
 - **DB Safety**: Fallback to in-memory database is disabled in production to ensure data integrity.
 
 ## ✅ Health Check
-Once deployed, visit your Render URL. You should see a JSON response:
+Once deployed, visit your Render URL (e.g., `https://luxejewellery.onrender.com/`). You should see a JSON response:
 ```json
 {
   "status": "online",
