@@ -4,14 +4,20 @@ const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST || 'smtp.gmail.com',
     port: 587,
     secure: false, // true for 465, false for 587 (uses STARTTLS)
-    family: 4, // Force IPv4 to avoid ENETUNREACH errors on Render
+    // Force IPv4 to avoid ENETUNREACH errors on Render
+    family: 4, 
+    dns: {
+        family: 4
+    },
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
     },
-    connectionTimeout: 10000, // 10 seconds
-    greetingTimeout: 10000, 
-    socketTimeout: 30000 // 30 seconds for sending attachments
+    connectionTimeout: 15000, // 15 seconds
+    greetingTimeout: 15000, 
+    socketTimeout: 30000, // 30 seconds
+    debug: true, // Show detailed SMTP logs
+    logger: true // Log SMTP events
 });
 
 const generateOTP = () => {
