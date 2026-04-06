@@ -8,11 +8,12 @@ import { WishlistService } from '../../services/wishlist.service';
 import { ReviewService } from '../../services/review.service';
 import { AuthService } from '../../services/auth.service';
 import { Product, Review } from '../../models/product.model';
+import { Product360ViewerComponent } from '../../components/product-360-viewer/product-360-viewer.component';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, Product360ViewerComponent],
   template: `
     <section class="product-detail" *ngIf="product">
       <div class="container">
@@ -24,6 +25,11 @@ import { Product, Review } from '../../models/product.model';
             </div>
             <div class="thumbnails">
               <img *ngFor="let img of product.images" [src]="img" (click)="selectedImage = img" [class.active]="selectedImage === img">
+            </div>
+            
+            <!-- 360 Viewer -->
+            <div *ngIf="product.images360 && product.images360.length > 0" class="viewer-360-section mt-6">
+              <app-product-360-viewer [images]="product.images360"></app-product-360-viewer>
             </div>
           </div>
 
@@ -143,7 +149,9 @@ import { Product, Review } from '../../models/product.model';
       border: 2px solid transparent; cursor: pointer; transition: 0.3s;
     }
     .thumbnails img.active, .thumbnails img:hover { border-color: #D4AF37; }
-
+    
+    .viewer-360-section { margin-top: 24px; }
+    
     .info {}
     .info-category { color: #D4AF37; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
     .info h1 { font-size: 2rem; margin: 8px 0 16px; color: #fff; }

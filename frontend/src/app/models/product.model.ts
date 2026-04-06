@@ -5,6 +5,7 @@ export interface Product {
     category: string;
     description: string;
     images: string[];
+    images360?: string[];
     goldType: string;
     weight: string;
     stock: number;
