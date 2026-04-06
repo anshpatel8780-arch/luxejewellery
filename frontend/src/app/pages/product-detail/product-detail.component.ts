@@ -20,16 +20,28 @@ import { Product360ViewerComponent } from '../../components/product-360-viewer/p
         <div class="detail-grid">
           <!-- Image Gallery -->
           <div class="gallery">
-            <div class="main-image" (mousemove)="onZoom($event)" (mouseleave)="resetZoom()">
-              <img [src]="selectedImage" [alt]="product.name" [style.transform-origin]="zoomOrigin" [class.zoomed]="isZooming">
+            <div class="main-image-container">
+              <div class="main-image" *ngIf="!is360Active" (mousemove)="onZoom($event)" (mouseleave)="resetZoom()">
+                <img [src]="selectedImage" [alt]="product.name" [style.transform-origin]="zoomOrigin" [class.zoomed]="isZooming">
+              </div>
+              
+              <!-- 360 Viewer -->
+              <div *ngIf="is360Active && product.images360 && product.images360.length > 0" class="viewer-360-wrapper">
+                <app-product-360-viewer [images]="product.images360"></app-product-360-viewer>
+                <button class="back-btn" (click)="is360Active = false">
+                   <i class="fa-solid fa-arrow-left"></i> Back to Images
+                </button>
+              </div>
             </div>
+            <!-- 360 Button Toggle -->
+            <button *ngIf="!is360Active && product.images360 && product.images360.length > 0" 
+                    class="btn-360-toggle" 
+                    (click)="is360Active = true">
+              <i class="fa-solid fa-rotate"></i> Interactive 360° View
+            </button>
+
             <div class="thumbnails">
-              <img *ngFor="let img of product.images" [src]="img" (click)="selectedImage = img" [class.active]="selectedImage === img">
-            </div>
-            
-            <!-- 360 Viewer -->
-            <div *ngIf="product.images360 && product.images360.length > 0" class="viewer-360-section mt-6">
-              <app-product-360-viewer [images]="product.images360"></app-product-360-viewer>
+              <img *ngFor="let img of product.images" [src]="img" (click)="selectedImage = img; is360Active = false" [class.active]="selectedImage === img && !is360Active">
             </div>
           </div>
 
@@ -136,21 +148,36 @@ import { Product360ViewerComponent } from '../../components/product-360-viewer/p
     .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
 
     .gallery {}
+    .main-image-container { position: relative; margin-bottom: 16px; border-radius: 12px; overflow: hidden; }
     .main-image {
-      border-radius: 12px; overflow: hidden; background: #1A1A1A;
-      border: 1px solid #333; margin-bottom: 16px; cursor: zoom-in;
-      aspect-ratio: 1;
+      background: #1A1A1A; border: 1px solid #333; cursor: zoom-in;
+      aspect-ratio: 1; border-radius: inherit;
     }
     .main-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
     .main-image img.zoomed { transform: scale(1.8); }
+
+    .viewer-360-wrapper { position: relative; width: 100%; background: #1A1A1A; aspect-ratio: 1; border-radius: inherit; overflow: hidden; border: 1px solid #333; }
+    .viewer-360-wrapper .back-btn { 
+      position: absolute; top: 16px; left: 16px; background: rgba(0,0,0,0.6); 
+      color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; 
+      padding: 6px 14px; font-size: 0.85rem; cursor: pointer; transition: 0.2s; backdrop-filter: blur(4px); z-index: 100;
+    }
+    .viewer-360-wrapper .back-btn:hover { background: rgba(212,175,55,0.8); border-color: #D4AF37; }
+
     .thumbnails { display: flex; gap: 12px; }
     .thumbnails img {
       width: 80px; height: 80px; object-fit: cover; border-radius: 8px;
-      border: 2px solid transparent; cursor: pointer; transition: 0.3s;
+      border: 2px solid #333; cursor: pointer; transition: 0.3s;
     }
     .thumbnails img.active, .thumbnails img:hover { border-color: #D4AF37; }
     
-    .viewer-360-section { margin-top: 24px; }
+    .btn-360-toggle { 
+      width: 100%; margin-bottom: 16px; display: flex; justify-content: center; 
+      gap: 8px; align-items: center; border: 1px solid #D4AF37; color: #D4AF37; 
+      background: transparent; padding: 12px; border-radius: 8px; 
+      cursor: pointer; font-weight: 600; font-size: 1rem; transition: background 0.3s; 
+    }
+    .btn-360-toggle:hover { background: rgba(212, 175, 55, 0.1); }
     
     .info {}
     .info-category { color: #D4AF37; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
@@ -252,10 +279,13 @@ import { Product360ViewerComponent } from '../../components/product-360-viewer/p
       .product-detail { padding: 90px 0 40px; }
       .detail-grid { grid-template-columns: 1fr; gap: 24px; }
       
-      .main-image { border-radius: 0; margin-left: -20px; margin-right: -20px; border-left: none; border-right: none; }
+      .main-image-container { border-radius: 0; margin-left: -20px; margin-right: -20px; }
+      .main-image { border-radius: 0; border-left: none; border-right: none; }
+      .viewer-360-wrapper { border-radius: 0; border-left: none; border-right: none; }
+      
       .thumbnails { overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
       .thumbnails::-webkit-scrollbar { display: none; }
-      .thumbnails img { width: 70px; height: 70px; flex-shrink: 0; }
+      .thumbnails img, .thumbnail-360 { width: 70px; height: 70px; flex-shrink: 0; }
       
       .info h1 { font-size: 1.6rem; margin-bottom: 12px; }
       .info-price { font-size: 1.6rem; }
@@ -280,6 +310,7 @@ export class ProductDetailComponent implements OnInit {
   message = '';
   isError = false;
   isZooming = false;
+  is360Active = false;
   isEligible = false;
   eligibilityReason = '';
   zoomOrigin = 'center center';

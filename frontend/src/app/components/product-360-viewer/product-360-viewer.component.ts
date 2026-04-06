@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, AfterViewInit, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { Component, Input, OnInit, AfterViewInit, HostListener, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -6,10 +6,10 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="viewer-container" #viewerContainer>
+    <div class="viewer-container">
       <div *ngIf="isLoading" class="loading-overlay">
         <div class="spinner"></div>
-        <div class="loading-text">Loading 360° View ({{loadingProgress}}%)</div>
+        <div class="loading-text">Loading 360° View...</div>
       </div>
       
       <div class="viewer-content" 
@@ -38,6 +38,8 @@ import { CommonModule } from '@angular/common';
     .viewer-container {
       position: relative;
       width: 100%;
+      height: 100%;
+      min-height: 400px;
       aspect-ratio: 1;
       background: #1A1A1A;
       border-radius: 12px;
@@ -104,6 +106,8 @@ import { CommonModule } from '@angular/common';
       height: 100%;
       object-fit: cover;
       pointer-events: none; /* Prevent native dragging */
+      /* use hardware accel for swapping if possible */
+      transform: translateZ(0); 
     }
 
     .viewer-hint {
@@ -136,64 +140,120 @@ import { CommonModule } from '@angular/common';
     }
   `]
 })
-export class Product360ViewerComponent implements OnInit, AfterViewInit {
+export class Product360ViewerComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() images: string[] = [];
   
   currentFrame = 0;
   isLoading = true;
-  loadingProgress = 0;
   
   private isDragging = false;
   private startX = 0;
-  private frameAtDragStart = 0;
+  private targetFrame = 0;
+  private currentFloatFrame = 0;
+  private isAnimating = false;
   
-  // Sensitivity: pixels needed to drag to move one frame
-  // Smaller number = faster rotation
-  private sensitivity = 10;
-  
+  private touchStartY = 0;
+  private isTouchScrollIntent: boolean | null = null;
+  private sensitivity = 5; 
   private animationFrameId: number | null = null;
-  private loadedImageElements: HTMLImageElement[] = [];
+  
+  private cachedFrames = new Map<number, HTMLImageElement>();
+  private CACHE_RANGE = 3;
+  
+  private isLowPerformance = false;
+  private prefersReducedMotion = false;
+  private mediaQueryListener?: (e: MediaQueryListEvent) => void;
 
   constructor() { }
 
   ngOnInit(): void {
+    const nav = navigator as any;
+    if ((nav.deviceMemory && nav.deviceMemory <= 4) || (nav.hardwareConcurrency && nav.hardwareConcurrency <= 4)) {
+       this.isLowPerformance = true;
+    }
+
+    const mql = window.matchMedia('(prefers-reduced-motion: reduce)');
+    this.prefersReducedMotion = mql.matches;
+    this.mediaQueryListener = (e) => this.prefersReducedMotion = e.matches;
+    mql.addEventListener('change', this.mediaQueryListener);
   }
 
   ngAfterViewInit(): void {
     if (this.images && this.images.length > 0) {
-      this.preloadImages();
+      this.loadInitialFrames();
     } else {
       this.isLoading = false;
     }
   }
 
-  private preloadImages(): void {
-    let loadedCount = 0;
-    this.isLoading = true;
-    this.loadingProgress = 0;
-    
-    const totalImages = this.images.length;
+  ngOnDestroy(): void {
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
+    if (this.mediaQueryListener) {
+      window.matchMedia('(prefers-reduced-motion: reduce)').removeEventListener('change', this.mediaQueryListener);
+    }
+    this.flushCache();
+  }
 
-    this.images.forEach((src, index) => {
-      const img = new Image();
-      img.onload = () => {
-        loadedCount++;
-        this.loadingProgress = Math.round((loadedCount / totalImages) * 100);
-        if (loadedCount === totalImages) {
-          this.isLoading = false;
-        }
-      };
-      img.onerror = () => {
-        console.error(`Failed to load frame ${index} for 360 viewer`);
-        loadedCount++;
-        this.loadingProgress = Math.round((loadedCount / totalImages) * 100);
-        if (loadedCount === totalImages) {
-          this.isLoading = false;
-        }
-      };
-      img.src = src;
-      this.loadedImageElements.push(img);
-    });
+  @HostListener('document:visibilitychange')
+  onVisibilityChange() {
+    if (document.hidden) {
+      if (this.animationFrameId) {
+        cancelAnimationFrame(this.animationFrameId);
+        this.animationFrameId = null;
+      }
+    } else if (this.isAnimating) {
+      this.startAnimationLoop();
+    }
+  }
+
+  private loadInitialFrames(): void {
+    this.isLoading = true;
+    
+    // Load just the first frame to display something immediately
+    const firstImg = new Image();
+    firstImg.onload = () => {
+      firstImg.decode().then(() => {
+        this.isLoading = false;
+        this.cachedFrames.set(0, firstImg);
+        this.manageCache(0); // preloads nearby +- 3 frames for initial interaction
+      }).catch(() => {
+        this.isLoading = false;
+      });
+    };
+    firstImg.onerror = () => {
+      this.isLoading = false; 
+    };
+    firstImg.src = this.images[0];
+  }
+
+  private manageCache(centerFrame: number): void {
+    const totalFrames = this.images.length;
+    if (totalFrames === 0) return;
+
+    // Load nearby frames
+    for (let i = -this.CACHE_RANGE; i <= this.CACHE_RANGE; i++) {
+      const idx = ((centerFrame + i) % totalFrames + totalFrames) % totalFrames;
+      if (!this.cachedFrames.has(idx)) {
+        const img = new Image();
+        img.src = this.images[idx];
+        // Decode off main thread to prevent jank
+        img.decode().then(() => {
+           this.cachedFrames.set(idx, img);
+        }).catch(() => {});
+      }
+    }
+
+    // Release distant frames
+    for (const key of Array.from(this.cachedFrames.keys())) {
+      const dist = Math.min(Math.abs(key - centerFrame), totalFrames - Math.abs(key - centerFrame));
+      if (dist > this.CACHE_RANGE) {
+        const img = this.cachedFrames.get(key);
+        if (img) img.src = ''; // Helps garbage collector
+        this.cachedFrames.delete(key);
+      }
+    }
   }
 
   onMouseDown(event: MouseEvent): void {
@@ -211,14 +271,34 @@ export class Product360ViewerComponent implements OnInit, AfterViewInit {
   onTouchStart(event: TouchEvent): void {
     if (event.touches.length > 0) {
       this.startDrag(event.touches[0].clientX);
+      this.touchStartY = event.touches[0].clientY;
+      this.isTouchScrollIntent = null;
     }
   }
 
   onTouchMove(event: TouchEvent): void {
     if (event.touches.length > 0) {
-      // Prevent scrolling while rotating
-      event.preventDefault();
-      this.handleDrag(event.touches[0].clientX);
+      const currentX = event.touches[0].clientX;
+      const currentY = event.touches[0].clientY;
+      
+      if (this.isTouchScrollIntent === null) {
+        const deltaX = Math.abs(currentX - this.startX);
+        const deltaY = Math.abs(currentY - this.touchStartY);
+        
+        if (deltaX > 5 || deltaY > 5) {
+          if (deltaY > deltaX) {
+            this.isTouchScrollIntent = true; 
+            this.endDrag();
+          } else {
+            this.isTouchScrollIntent = false;
+          }
+        }
+      }
+      
+      if (this.isTouchScrollIntent === false) {
+        event.preventDefault();
+        this.handleDrag(currentX);
+      }
     }
   }
 
@@ -229,34 +309,83 @@ export class Product360ViewerComponent implements OnInit, AfterViewInit {
   private startDrag(startX: number): void {
     this.isDragging = true;
     this.startX = startX;
-    this.frameAtDragStart = this.currentFrame;
+    this.targetFrame = this.currentFloatFrame;
   }
 
   private handleDrag(currentX: number): void {
     if (!this.isDragging || this.images.length === 0) return;
 
-    if (this.animationFrameId) {
-      cancelAnimationFrame(this.animationFrameId);
-    }
+    const deltaX = currentX - this.startX;
+    const framesToMove = deltaX / this.sensitivity; 
+    
+    this.targetFrame = this.currentFloatFrame - framesToMove;
+    
+    this.startX = currentX;
+    this.currentFloatFrame = this.targetFrame; 
+    
+    this.startAnimationLoop();
+  }
 
-    this.animationFrameId = requestAnimationFrame(() => {
-      const deltaX = currentX - this.startX;
-      // Calculate how many frames to move based on deltaX and sensitivity
-      // Moving right (positive delta) -> previous frame (rotate left)
-      // Moving left (negative delta) -> next frame (rotate right)
-      const framesToMove = Math.floor(deltaX / this.sensitivity);
+  private startAnimationLoop(): void {
+    if (this.isAnimating) return;
+    this.isAnimating = true;
+    
+    const loop = () => {
+      const skipInertia = this.isLowPerformance || this.prefersReducedMotion;
       
-      let newFrame = this.frameAtDragStart - framesToMove;
+      if (!this.isDragging) {
+        const diff = this.targetFrame - this.currentFloatFrame;
+        
+        if (skipInertia || Math.abs(diff) < 0.05) {
+          this.currentFloatFrame = this.targetFrame;
+          this.isAnimating = false;
+        } else {
+          this.currentFloatFrame += diff * 0.15;
+          this.animationFrameId = requestAnimationFrame(loop);
+        }
+      } else {
+        this.currentFloatFrame = this.targetFrame;
+        this.animationFrameId = requestAnimationFrame(loop);
+        
+        if (Math.abs(this.targetFrame - this.currentFloatFrame) < 0.05) {
+            this.isAnimating = false;
+        }
+      }
+
+      this.updateCurrentFrame();
+    };
+    
+    this.animationFrameId = requestAnimationFrame(loop);
+  }
+
+  private updateCurrentFrame(): void {
+    const totalFrames = this.images.length;
+    if (totalFrames > 0) {
+      const normalizedFrame = Math.round(this.currentFloatFrame);
+      const newFrame = ((normalizedFrame % totalFrames) + totalFrames) % totalFrames;
       
-      // Ensure positive modulo logic for wrap-around
-      const totalFrames = this.images.length;
-      newFrame = ((newFrame % totalFrames) + totalFrames) % totalFrames;
-      
-      this.currentFrame = newFrame;
-    });
+      if (this.currentFrame !== newFrame) {
+        this.currentFrame = newFrame;
+        this.manageCache(this.currentFrame);
+      }
+    }
   }
 
   private endDrag(): void {
     this.isDragging = false;
+    if (Math.abs(this.targetFrame - this.currentFloatFrame) > 0.1) {
+      if (!this.isLowPerformance && !this.prefersReducedMotion) {
+        this.startAnimationLoop();
+      }
+    }
+  }
+
+  private flushCache(): void {
+    for (const key of Array.from(this.cachedFrames.keys())) {
+      const img = this.cachedFrames.get(key);
+      if (img) img.src = '';
+    }
+    this.cachedFrames.clear();
   }
 }
+
