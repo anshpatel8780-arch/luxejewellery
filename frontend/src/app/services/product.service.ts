@@ -43,16 +43,6 @@ export class ProductService {
             });
         }
         
-        // Inject placeholder 360 images for demonstration if none exist
-        if (!product.images360 || product.images360.length === 0) {
-            product.images360 = [];
-            for (let i = 1; i <= 36; i++) { // 36 frames
-                const bgColor = 'F9F9F9';
-                const text = `Frame ${i} - Rotate`;
-                product.images360.push(`https://placehold.co/600x600/${bgColor}/333333?text=${encodeURIComponent(text)}`);
-            }
-        }
-        
         return product;
     }
 
