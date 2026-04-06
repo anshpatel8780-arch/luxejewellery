@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ChatService, ChatMessage } from '../../services/chat.service';
 import { Subscription } from 'rxjs';
 import { trigger, transition, style, animate } from '@angular/animations';
@@ -36,6 +37,24 @@ import { trigger, transition, style, animate } from '@angular/animations';
           <div class="message-bubble">
             <p>{{msg.content}}</p>
             <span class="msg-time">{{msg.timestamp | date:'shortTime'}}</span>
+          </div>
+
+          <!-- Product Recommendation Cards -->
+          <div *ngIf="msg.products && msg.products.length > 0" class="product-recommendations">
+            <div *ngFor="let prod of msg.products" class="product-card-rec animate-fade-in shadow-lg">
+              <div class="card-image-wrapper">
+                <img [src]="prod.image" [alt]="prod.name" loading="lazy" (error)="handleImageError($event)">
+                <div class="image-skeleton"></div>
+              </div>
+              <div class="card-content">
+                <h5 class="product-name">{{prod.name}}</h5>
+                <p class="product-price">₹{{prod.price | number}}</p>
+                <p class="product-desc">{{prod.description}}</p>
+                <button class="btn-see-details" (click)="onSeeDetails(prod.slug)">
+                  See Details <i class="fa-solid fa-arrow-right"></i>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
         
@@ -148,9 +167,52 @@ import { trigger, transition, style, animate } from '@angular/animations';
     .dot:nth-child(3) { animation-delay: 0.4s; }
     @keyframes blink { 0%, 100% { opacity: 0.4; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
 
-    /* Custom Scrollbar */
     .chat-messages::-webkit-scrollbar { width: 4px; }
     .chat-messages::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.2); border-radius: 10px; }
+
+    /* Product Cards in Chat */
+    .product-recommendations {
+      display: flex; flex-direction: column; gap: 12px; margin-top: 8px; width: 100%;
+    }
+    .product-card-rec {
+      background: #1A1A1A; border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;
+      transition: 0.3s; width: 100%; max-width: 280px;
+    }
+    .product-card-rec:hover { border-color: #D4AF37; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.5); }
+    
+    .card-image-wrapper { position: relative; width: 100%; aspect-ratio: 1; background: #000; overflow: hidden; }
+    .card-image-wrapper img { 
+      width: 100%; height: 100%; object-fit: cover; z-index: 2; position: relative;
+      transition: 0.5s; opacity: 0;
+    }
+    .card-image-wrapper img[src] { opacity: 1; }
+    
+    .image-skeleton { 
+      position: absolute; top:0; left:0; width:100%; height:100%; 
+      background: linear-gradient(90deg, #1A1A1A 25%, #222 50%, #1A1A1A 75%);
+      background-size: 200% 100%; animation: skeleton-load 1.5s infinite; z-index: 1;
+    }
+    @keyframes skeleton-load { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    .card-content { padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+    .product-name { color: #fff; margin: 0; font-size: 0.9rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .product-price { color: #D4AF37; font-weight: 700; font-size: 0.95rem; margin: 0; }
+    .product-desc { 
+      color: #777; font-size: 0.75rem; margin: 4px 0 8px; line-height: 1.4;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    
+    .btn-see-details {
+      background: #D4AF37; color: #0d0d0d; border: none; border-radius: 6px;
+      padding: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: 0.2s;
+    }
+    .btn-see-details:hover { background: #fff; }
+
+    .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     @media (max-width: 480px) {
       .chat-panel { width: calc(100% - 40px); right: 20px; bottom: 90px; }
@@ -167,7 +229,7 @@ export class AiChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   messages: ChatMessage[] = [];
   private sub: Subscription | null = null;
 
-  constructor(private chatService: ChatService) {}
+  constructor(private chatService: ChatService, private router: Router) {}
 
   ngOnInit() {
     this.sub = this.chatService.messages$.subscribe(msgs => {
@@ -214,5 +276,14 @@ export class AiChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (this.scrollContainer) {
       this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
     }
+  }
+
+  onSeeDetails(slug: string) {
+    this.router.navigate(['/product', slug]);
+    this.toggleChat(); // Close chat as per requirements
+  }
+
+  handleImageError(event: any) {
+    event.target.src = 'assets/img/placeholder-product.jpg'; // Fallback if image fails
   }
 }

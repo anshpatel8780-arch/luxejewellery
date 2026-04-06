@@ -7,6 +7,7 @@ export interface ChatMessage {
   role: 'user' | 'bot';
   content: string;
   timestamp: Date;
+  products?: {name: string, slug: string, price: number, description: string, image: string}[];
 }
 
 @Injectable({
@@ -38,7 +39,12 @@ export class ChatService {
 
     return this.http.post<any>(`${this.apiUrl}/send`, payload).pipe(
       tap(res => {
-        const botMsg: ChatMessage = { role: 'bot', content: res.response, timestamp: new Date() };
+        const botMsg: ChatMessage = { 
+          role: 'bot', 
+          content: res.response, 
+          timestamp: new Date(),
+          products: res.recommends && res.recommends.length > 0 ? res.recommends : undefined
+        };
         this.messagesSubject.next([...this.messagesSubject.value, botMsg]);
       })
     );
