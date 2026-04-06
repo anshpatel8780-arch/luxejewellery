@@ -47,8 +47,12 @@ export class OrderService {
         );
     }
 
-    getStats(): Observable<OrderStats> {
-        return this.http.get<OrderStats>(`${this.apiUrl}/stats`);
+    getStats(startDate?: string, endDate?: string): Observable<OrderStats> {
+        let url = `${this.apiUrl}/stats`;
+        if (startDate && endDate) {
+            url += `?startDate=${startDate}&endDate=${endDate}`;
+        }
+        return this.http.get<OrderStats>(url);
     }
 
     cancelOrderAction(id: string, reason: string): Observable<Order> {

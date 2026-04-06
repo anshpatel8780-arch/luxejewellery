@@ -153,11 +153,20 @@ exports.getOrderStats = async (req, res) => {
             { $sort: { '_id': 1 } }
         ]);
 
-        // Daily Sales Trend (Last 30 Days)
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        // Daily Sales Trend (Filtered by Custom Date Range)
+        const { startDate, endDate } = req.query;
+        let queryRange = {};
+        
+        if (startDate && endDate) {
+            queryRange = { createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) } };
+        } else {
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            queryRange = { createdAt: { $gte: thirtyDaysAgo } };
+        }
+
         const salesTrend = await Order.aggregate([
-            { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+            { $match: queryRange },
             { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, total: { $sum: '$totalPrice' } } },
             { $sort: { '_id': 1 } }
         ]);

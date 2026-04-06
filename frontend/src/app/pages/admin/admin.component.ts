@@ -136,12 +136,24 @@ import { Product, Order, User, OrderStats, Coupon } from '../../models/product.m
               </div>
 
               <div class="chart-box luxury-card wide">
-                <div class="chart-header"><h4><i class="fa-solid fa-chart-line gold"></i> 30-Day Sales Trend</h4></div>
+                <div class="chart-header">
+                  <h4><i class="fa-solid fa-chart-line gold"></i> Sales Overview</h4>
+                  <div class="date-filter-group">
+                    <div class="date-input-wrapper">
+                      <label>From</label>
+                      <input type="date" [(ngModel)]="startDate" (change)="onDateRangeChange()" class="premium-date-input">
+                    </div>
+                    <div class="date-input-wrapper">
+                      <label>To</label>
+                      <input type="date" [(ngModel)]="endDate" (change)="onDateRangeChange()" class="premium-date-input">
+                    </div>
+                  </div>
+                </div>
                 <div class="chart-container">
                   <canvas *ngIf="hasData('trend')" id="trendChart"></canvas>
                   <div *ngIf="!hasData('trend')" class="no-data-placeholder">
                     <i class="fa-solid fa-chart-line"></i>
-                    <p>No sales activity in the last 30 days</p>
+                    <p>No sales activity in this period</p>
                   </div>
                 </div>
               </div>
@@ -800,6 +812,20 @@ import { Product, Order, User, OrderStats, Coupon } from '../../models/product.m
       background-repeat: no-repeat; background-position: right 8px center; background-size: 18px;
       padding-right: 30px;
     }
+    
+    /* Premium Date Filters */
+    .date-filter-group { display: flex; gap: 20px; align-items: center; }
+    .date-input-wrapper { display: flex; align-items: center; gap: 10px; }
+    .date-input-wrapper label { font-size: 0.7rem; text-transform: uppercase; color: #666; font-weight: 800; letter-spacing: 0.5px; }
+    .premium-date-input { 
+      background: #151515; border: 1px solid rgba(212, 175, 55, 0.2); 
+      color: #D4AF37; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; 
+      font-weight: 600; cursor: pointer; transition: 0.3s;
+      outline: none;
+    }
+    .premium-date-input:hover, .premium-date-input:focus { border-color: #D4AF37; background: #1a1a1a; box-shadow: 0 0 15px rgba(212, 175, 55, 0.1); }
+    /* Hide default date icon in some browsers to use custom styling */
+    .premium-date-input::-webkit-calendar-picker-indicator { filter: invert(0.7) sepia(1) saturate(5) hue-rotate(10deg); cursor: pointer; }
     .mini-select:hover { border-color: #D4AF37; background-color: #1a1a1a; box-shadow: 0 0 10px rgba(212, 175, 55, 0.1); }
     .mini-select option { background: #151515; color: #fff; padding: 10px; }
 
@@ -946,6 +972,10 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
   chartDataLoaded = false;
   showMobileSidebar = false;
 
+  // Date Range Filter
+  startDate: string = '';
+  endDate: string = '';
+
   // Product Editor State
   showProductForm = false;
   editingProduct: Product | null = null;
@@ -974,10 +1004,25 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.initDefaultDates();
     this.loadDashboard();
     this.authService.user$.subscribe(u => {
       if (u) this.profileForm = { name: u.name, email: u.email, phone: u.phone || '' };
     });
+  }
+
+  private initDefaultDates() {
+    const end = new Date();
+    const start = new Date();
+    start.setDate(start.getDate() - 30);
+    
+    this.endDate = end.toISOString().split('T')[0];
+    this.startDate = start.toISOString().split('T')[0];
+  }
+
+  onDateRangeChange() {
+    this.isLoading = true;
+    this.loadDashboard();
   }
 
   editProduct(p: Product) {
@@ -1058,7 +1103,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   loadDashboard() {
-    this.orderService.getStats().subscribe({
+    this.orderService.getStats(this.startDate, this.endDate).subscribe({
       next: (s) => {
         // Ensure arrays are initialized even if backend fails/delivers empty
         this.stats = {
