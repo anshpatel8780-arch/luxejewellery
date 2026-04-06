@@ -11,10 +11,10 @@ async function getProductCatalog() {
         return cachedProducts;
     }
     try {
-        const products = await Product.find({}, '_id name slug price description images').lean();
+        const products = await Product.find({}, '_id name price description images').lean();
         cachedProducts = products.map(p => ({
+            id: p._id.toString(),
             name: p.name,
-            slug: p.slug,
             price: p.price,
             description: p.description ? (p.description.substring(0, 100) + '...') : '',
             image: (p.images && p.images.length > 0) ? p.images[0] : null
@@ -40,7 +40,7 @@ exports.handleChat = async (req, res) => {
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`;
 
         const catalog = await getProductCatalog();
-        const catalogText = catalog.map(p => `- ${p.name} (Slug: ${p.slug}, Price: ₹${p.price}): ${p.description}`).join('\n');
+        const catalogText = catalog.map(p => `- ${p.name} (ID: ${p.id}, Price: ₹${p.price}): ${p.description}`).join('\n');
 
         // System Instruction context
         const systemPrompt = `
@@ -63,7 +63,8 @@ exports.handleChat = async (req, res) => {
 
             RECOMMENDING PRODUCTS:
             You have access to our live inventory. If a user asks for recommendations, choose from the exact products listed below. 
-            When you recommend a specific product, YOU MUST append its exact slug in brackets at the very end of your response, like this: [SLUG:product-slug-here]
+            When you recommend a specific product, YOU MUST append its exact ID in brackets at the very end of your response, like this: [ID:product-id-here]
+            Example: "I highly recommend our Heritage Gold Watch [ID:12345]"
             You may recommend up to 3 products at a time.
             
             Live Inventory Catalog:
@@ -134,22 +135,22 @@ exports.handleChat = async (req, res) => {
         if (data.candidates && data.candidates.length > 0 && data.candidates[0].content) {
             let botResponse = data.candidates[0].content.parts[0].text;
             
-            // Extract and clean [SLUG:...] tags
-            const slugs = [];
-            botResponse = botResponse.replace(/\[SLUG:([^\]]+)\]/g, (match, slug) => {
-                slugs.push(slug.trim());
+            // Extract and clean [ID:...] tags
+            const ids = [];
+            botResponse = botResponse.replace(/\[ID:([^\]]+)\]/g, (match, id) => {
+                ids.push(id.trim());
                 return '';
             }).trim();
 
-            const uniqueSlugs = [...new Set(slugs)].slice(0, 3); // Max 3 cards
+            const uniqueIds = [...new Set(ids)].slice(0, 3); // Max 3 cards
             let recommends = [];
             
-            if (uniqueSlugs.length > 0) {
+            if (uniqueIds.length > 0) {
                 const catalog = await getProductCatalog();
                 const baseUrl = process.env.BASE_URL || 'http://localhost:10000';
                 
-                recommends = uniqueSlugs.map(slug => {
-                    const p = catalog.find(prod => prod.slug === slug);
+                recommends = uniqueIds.map(id => {
+                    const p = catalog.find(prod => prod.id === id);
                     if (p) {
                         let absoluteImage = p.image;
                         if (absoluteImage && !absoluteImage.startsWith('http') && !absoluteImage.startsWith('data:')) {
@@ -158,7 +159,7 @@ exports.handleChat = async (req, res) => {
                         }
                         return {
                             name: p.name,
-                            slug: p.slug,
+                            slug: p.id, // Using ID as the slug for navigation
                             price: p.price,
                             description: p.description,
                             image: absoluteImage
