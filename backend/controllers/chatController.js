@@ -148,7 +148,14 @@ exports.handleChat = async (req, res) => {
             const catalog = await getProductCatalog();
             if (ids.length === 0) {
                 catalog.forEach(p => {
-                    if (botResponse.toLowerCase().includes(p.name.toLowerCase())) {
+                    // Match full name or significant part of name (case insensitive)
+                    // We check if the product name (or a core part of it) appears in the AI response
+                    const lowerResponse = botResponse.toLowerCase();
+                    const lowerName = p.name.toLowerCase();
+                    
+                    // Direct match or check for "Heritage Gold" matching "Heritage Gold Chronograph"
+                    if (lowerResponse.includes(lowerName) || 
+                       (lowerName.replace(/the\s+/g, '').length > 5 && lowerResponse.includes(lowerName.split(' ').slice(0, 3).join(' ')))) {
                         ids.push(p.id);
                     }
                 });
