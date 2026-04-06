@@ -61,15 +61,17 @@ exports.handleChat = async (req, res) => {
             - If unknown, suggest browsing the "Shop" page.
             - Always maintain a premium, helpful tone.
 
-            RECOMMENDING PRODUCTS:
-            You have access to our live inventory. If a user asks for recommendations, choose from the exact products listed below. 
-            When you recommend a specific product, YOU MUST append its exact ID in brackets at the very end of your response, like this: [ID:product-id-here]
-            Example: "I highly recommend our Heritage Gold Watch [ID:12345]"
-            You may recommend up to 3 products at a time.
+            RECOMMENDING PRODUCTS (CRITICAL):
+            - Choose ONLY from the inventory below.
+            - When recommending, you MUST end your sentence with the product ID in brackets: [ID:id-here]
+            - Do not leave out the brackets.
             
-            Live Inventory Catalog:
+            Inventory:
             ${catalogText}
         `;
+
+        // Log the catalog size for debugging
+        console.log(`[AI-Chat] Providing ${catalog.length} products to Gemini.`);
 
         // Initialize with system context in a way Gemini likes (user prompt + model acknowledgement)
         const contents = [
@@ -140,13 +142,22 @@ exports.handleChat = async (req, res) => {
             botResponse = botResponse.replace(/\[ID:([^\]]+)\]/g, (match, id) => {
                 ids.push(id.trim());
                 return '';
-            }).trim();
+            });
+
+            // FALLBACK: Name-based fuzzy search for products mentioned in text if tags are missing
+            const catalog = await getProductCatalog();
+            if (ids.length === 0) {
+                catalog.forEach(p => {
+                    if (botResponse.toLowerCase().includes(p.name.toLowerCase())) {
+                        ids.push(p.id);
+                    }
+                });
+            }
 
             const uniqueIds = [...new Set(ids)].slice(0, 3); // Max 3 cards
             let recommends = [];
             
             if (uniqueIds.length > 0) {
-                const catalog = await getProductCatalog();
                 const baseUrl = process.env.BASE_URL || 'http://localhost:10000';
                 
                 recommends = uniqueIds.map(id => {
@@ -159,7 +170,7 @@ exports.handleChat = async (req, res) => {
                         }
                         return {
                             name: p.name,
-                            slug: p.id, // Using ID as the slug for navigation
+                            slug: p.id,
                             price: p.price,
                             description: p.description,
                             image: absoluteImage
@@ -169,7 +180,7 @@ exports.handleChat = async (req, res) => {
                 }).filter(Boolean);
             }
 
-            res.json({ response: botResponse, recommends });
+            res.json({ response: botResponse.trim(), recommends });
         } else {
             console.warn('Gemini safety block or empty response:', data);
             res.status(200).json({ 
