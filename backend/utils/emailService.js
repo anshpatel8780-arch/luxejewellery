@@ -285,7 +285,7 @@ const sendOrderStatusUpdateEmail = async (user, order) => {
                   </p>
                   
                   <div style="text-align:center;margin-top:30px;">
-                    <a href="https://luxejewellery-anshpatel8780-archs-projects.vercel.app/dashboard" style="background:#2c1810;color:#ffffff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">View Order Details</a>
+                    <a href="https://kairojewels.vercel.app/dashboard" style="background:#2c1810;color:#ffffff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">View Order Details</a>
                   </div>
                 </td>
               </tr>

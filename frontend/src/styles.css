@@ -32,6 +32,10 @@
   box-sizing: border-box;
 }
 
+html, body {
+  max-width: 100%;
+}
+
 html {
   scroll-behavior: smooth;
   font-size: 16px;
@@ -44,7 +48,6 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -71,6 +74,8 @@ button {
   outline: none;
   font-family: 'Poppins', sans-serif;
   transition: var(--transition);
+  min-height: 44px;
+  min-width: 44px;
 }
 
 input, textarea, select {
@@ -103,7 +108,8 @@ input, textarea, select {
 .container {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding-left: clamp(12px, 4vw, 24px);
+  padding-right: clamp(12px, 4vw, 24px);
 }
 
 .section {
@@ -135,6 +141,8 @@ input, textarea, select {
   font-size: 0.95rem;
   letter-spacing: 0.5px;
   transition: var(--transition);
+  min-height: 44px;
+  min-width: 44px;
 }
 .btn-primary {
   background: linear-gradient(135deg, var(--gold), var(--gold-dark));
@@ -245,14 +253,14 @@ input, textarea, select {
   display: grid;
   gap: 24px;
 }
-.grid-4 { grid-template-columns: repeat(4, 1fr); }
-.grid-3 { grid-template-columns: repeat(3, 1fr); }
-.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-4 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.grid-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.grid-2 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
 
 /* Adaptive Grid Utility */
 .auto-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 25px;
 }
 
@@ -284,9 +292,6 @@ input, textarea, select {
 /* Large Tablets & Small Desktops (Tablet: 641px–1024px) */
 @media (max-width: 1024px) {
   html { font-size: 15px; }
-  .container { padding: 0 30px; }
-  .grid-4 { grid-template-columns: repeat(2, 1fr); }
-  .grid-3 { grid-template-columns: repeat(2, 1fr); }
   .section { padding: 60px 0; }
   .section-title h2 { font-size: 2.2rem; }
   .main-content { padding-top: 100px; }
@@ -295,9 +300,6 @@ input, textarea, select {
 /* Mobile Devices (Mobile: <= 640px) */
 @media (max-width: 640px) {
   html { font-size: 14px; }
-  .container { padding: 0 20px; }
-  .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
-  .auto-grid { grid-template-columns: 1fr; }
   
   .section { padding: 40px 0; }
   .section-title { margin-bottom: 30px; }

@@ -11,7 +11,7 @@ Before deploying, you **MUST** set the following environment variables in the Re
 | `NODE_ENV` | `production` |
 | `MONGO_URI` | Your MongoDB Atlas connection string |
 | `JWT_SECRET` | A long, random string for auth security |
-| `FRONTEND_URL` | `https://luxejewellery-anshpatel8780-archs-projects.vercel.app` |
+| `FRONTEND_URL` | `https://kairojewels.vercel.app` |
 | `CLOUDINARY_CLOUD_NAME` | Your Cloudinary Cloud Name |
 | `CLOUDINARY_API_KEY` | Your Cloudinary API Key |
 | `CLOUDINARY_API_SECRET` | Your Cloudinary API Secret |

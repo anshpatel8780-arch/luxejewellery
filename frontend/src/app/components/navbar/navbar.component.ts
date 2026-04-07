@@ -136,10 +136,10 @@ import { CartService } from '../../services/cart.service';
         padding: 10px 20px; background: rgba(10, 10, 10, 0.95);
       }
       .navbar.scrolled { top: 0; border-radius: 0; }
-      .hamburger { display: flex; order: 3; }
+      .hamburger { display: flex; order: 3; position: relative; z-index: 1001; }
       .logo { order: 1; }
       .nav-icons { order: 2; gap: 12px; }
-      .icon-btn { width: 36px; height: 36px; font-size: 1rem; }
+      .icon-btn { width: 44px; height: 44px; font-size: 1.15rem; }
       .btn-sm { display: none; } /* Hide login button on small mobile icons row, put in menu instead */
       
       .nav-links {
@@ -196,8 +196,15 @@ export class NavbarComponent {
     this.isScrolled = window.scrollY > 50;
   }
 
-  toggleMobile() { this.mobileOpen = !this.mobileOpen; }
-  closeMobile() { this.mobileOpen = false; }
+  toggleMobile() { 
+    this.mobileOpen = !this.mobileOpen; 
+    document.body.style.overflow = this.mobileOpen ? 'hidden' : '';
+  }
+  
+  closeMobile() { 
+    this.mobileOpen = false;
+    document.body.style.overflow = '';
+  }
 
   logout() {
     this.authService.logout();

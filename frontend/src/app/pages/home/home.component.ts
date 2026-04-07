@@ -9,10 +9,10 @@ import { Product, Coupon } from '../../models/product.model';
 import { Clipboard as CdkClipboard, ClipboardModule } from '@angular/cdk/clipboard';
 
 @Component({
-    selector: 'app-home',
-    standalone: true,
-    imports: [CommonModule, RouterLink, FormsModule, ClipboardModule],
-    template: `
+  selector: 'app-home',
+  standalone: true,
+  imports: [CommonModule, RouterLink, FormsModule, ClipboardModule],
+  template: `
     <!-- Hero Section -->
     <section class="hero">
       <div class="hero-overlay"></div>
@@ -200,7 +200,7 @@ import { Clipboard as CdkClipboard, ClipboardModule } from '@angular/cdk/clipboa
       </div>
     </section>
   `,
-    styles: [`
+  styles: [`
     /* Hero */
     .hero {
       height: 90vh; display: flex; align-items: center; justify-content: center;
@@ -245,7 +245,7 @@ import { Clipboard as CdkClipboard, ClipboardModule } from '@angular/cdk/clipboa
     }
 
     /* Product Grid & Cards */
-    .products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
     .product-card {
       background: #1E1E1E; border-radius: 12px; overflow: hidden;
       border: 1px solid #333; transition: all 0.3s;
@@ -278,7 +278,7 @@ import { Clipboard as CdkClipboard, ClipboardModule } from '@angular/cdk/clipboa
 
     /* Categories */
     .categories-section { background: #0A0A0A; }
-    .categories-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }
+    .categories-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
     .category-card { border-radius: 12px; overflow: hidden; position: relative; aspect-ratio: 0.8; }
     .category-image { position: relative; width: 100%; height: 100%; }
     .category-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
@@ -293,7 +293,7 @@ import { Clipboard as CdkClipboard, ClipboardModule } from '@angular/cdk/clipboa
     .category-overlay span { color: #D4AF37; font-size: 0.85rem; font-weight: 500; }
 
     /* Carousel */
-    .carousel { position: relative; overflow: hidden; padding: 20px 0; margin: 0 auto; max-width: 1200px; }
+    .carousel { position: relative; overflow: hidden; padding: 20px 0; margin: 0 auto; max-width: 1200px; width: 100%; }
     .carousel-track { display: flex; gap: 24px; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
     .carousel-item { width: 280px; flex-shrink: 0; }
     .carousel-btn {
@@ -329,7 +329,7 @@ import { Clipboard as CdkClipboard, ClipboardModule } from '@angular/cdk/clipboa
 
     /* Why Choose Us */
     .why-section { background: #0A0A0A; }
-    .why-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+    .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
     .why-card {
       text-align: center; padding: 40px 24px; border-radius: 12px;
       background: #1E1E1E; border: 1px solid #333; transition: 0.3s;
@@ -340,7 +340,7 @@ import { Clipboard as CdkClipboard, ClipboardModule } from '@angular/cdk/clipboa
     .why-card p { color: #777; font-size: 0.9rem; line-height: 1.6; }
 
     /* Testimonials */
-    .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
     .testimonial-card {
       background: #1E1E1E; border: 1px solid #333; border-radius: 12px;
       padding: 32px; transition: 0.3s;
@@ -376,10 +376,6 @@ import { Clipboard as CdkClipboard, ClipboardModule } from '@angular/cdk/clipboa
     /* Responsive */
     @media (max-width: 1024px) {
       .hero-content h1 { font-size: 3.5rem; }
-      .products-grid { grid-template-columns: repeat(3, 1fr); }
-      .categories-grid { grid-template-columns: repeat(3, 1fr); }
-      .why-grid { grid-template-columns: repeat(2, 1fr); }
-      .testimonials-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
     @media (max-width: 640px) {
@@ -392,18 +388,13 @@ import { Clipboard as CdkClipboard, ClipboardModule } from '@angular/cdk/clipboa
       .hero-stats { gap: 20px; padding-top: 25px; margin-top: 30px; }
       .stat-num { font-size: 1.4rem; }
       .stat-label { font-size: 0.75rem; }
-
-      .products-grid { grid-template-columns: 1fr; gap: 20px; }
-      .categories-grid { grid-template-columns: 1fr; }
+      
       .category-card { aspect-ratio: 1.2; }
       
       .carousel { overflow-x: auto; padding-right: 20px; scroll-snap-type: x mandatory; }
       .carousel-track { width: max-content; }
       .carousel-item { scroll-snap-align: start; }
       .carousel-btn { display: none; } /* Use touch scroll on mobile */
-
-      .why-grid { grid-template-columns: 1fr; }
-      .testimonials-grid { grid-template-columns: 1fr; }
       
       .newsletter-form { flex-direction: column; width: 100%; }
       .newsletter-content h2 { font-size: 1.6rem; }
@@ -459,66 +450,66 @@ import { Clipboard as CdkClipboard, ClipboardModule } from '@angular/cdk/clipboa
   `]
 })
 export class HomeComponent implements OnInit {
-    featuredProducts: Product[] = [];
-    bestSellers: Product[] = [];
-    activeCoupons: Coupon[] = [];
-    currentSlide = 0;
-    email = '';
-    subscribed = false;
+  featuredProducts: Product[] = [];
+  bestSellers: Product[] = [];
+  activeCoupons: Coupon[] = [];
+  currentSlide = 0;
+  email = '';
+  subscribed = false;
 
-    categories = [
-        { name: 'Rings', image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400' },
-        { name: 'Necklaces', image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400' },
-        { name: 'Earrings', image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400' },
-        { name: 'Bracelets', image: 'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=400' },
-        { name: 'Watches', image: 'https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400' }
-    ];
+  categories = [
+    { name: 'Rings', image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400' },
+    { name: 'Necklaces', image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400' },
+    { name: 'Earrings', image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400' },
+    { name: 'Bracelets', image: 'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=400' },
+    { name: 'Watches', image: 'https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400' }
+  ];
 
-    whyUs = [
-        { icon: '💎', title: 'Premium Quality', desc: 'Every piece is crafted with the finest materials and quality assurance.' },
-        { icon: '🏅', title: 'Certified Gold', desc: 'BIS hallmarked gold with purity guarantee certificates.' },
-        { icon: '🚚', title: 'Free Shipping', desc: 'Complimentary insured shipping on all orders across India.' },
-        { icon: '🔄', title: 'Easy Returns', desc: '30-day hassle-free returns with full refund guarantee.' }
-    ];
+  whyUs = [
+    { icon: '💎', title: 'Premium Quality', desc: 'Every piece is crafted with the finest materials and quality assurance.' },
+    { icon: '🏅', title: 'Certified Gold', desc: 'BIS hallmarked gold with purity guarantee certificates.' },
+    { icon: '🚚', title: 'Free Shipping', desc: 'Complimentary insured shipping on all orders across India.' },
+    { icon: '🔄', title: 'Easy Returns', desc: '30-day hassle-free returns with full refund guarantee.' }
+  ];
 
-    testimonials = [
-        { name: 'Priya Sharma', location: 'Mumbai', rating: 5, text: 'Absolutely stunning ring! The craftsmanship is exceptional. Received so many compliments. Will definitely shop again!' },
-        { name: 'Rahul Mehta', location: 'Delhi', rating: 5, text: 'Ordered a necklace for my wife\'s anniversary. She loved it! The quality exceeded our expectations. Premium packaging too.' },
-        { name: 'Anita Desai', location: 'Bangalore', rating: 4, text: 'Beautiful collection and fast delivery. The gold quality is authentic and the designs are truly unique and modern.' }
-    ];
+  testimonials = [
+    { name: 'Priya Sharma', location: 'Mumbai', rating: 5, text: 'Absolutely stunning ring! The craftsmanship is exceptional. Received so many compliments. Will definitely shop again!' },
+    { name: 'Rahul Mehta', location: 'Delhi', rating: 5, text: 'Ordered a necklace for my wife\'s anniversary. She loved it! The quality exceeded our expectations. Premium packaging too.' },
+    { name: 'Anita Desai', location: 'Bangalore', rating: 4, text: 'Beautiful collection and fast delivery. The gold quality is authentic and the designs are truly unique and modern.' }
+  ];
 
-    constructor(
-        private productService: ProductService,
-        private couponService: CouponService,
-        private notificationService: NotificationService,
-        private clipboard: CdkClipboard
-    ) { }
+  constructor(
+    private productService: ProductService,
+    private couponService: CouponService,
+    private notificationService: NotificationService,
+    private clipboard: CdkClipboard
+  ) { }
 
-    ngOnInit() {
-        this.productService.getProducts({ featured: 'true', limit: 8 }).subscribe(res => {
-            this.featuredProducts = res.products;
-        });
-        this.productService.getProducts({ bestSeller: 'true', limit: 10 }).subscribe(res => {
-            this.bestSellers = res.products;
-        });
-        this.couponService.getCoupons().subscribe(coupons => {
-            this.activeCoupons = coupons;
-        });
-    }
+  ngOnInit() {
+    this.productService.getProducts({ featured: 'true', limit: 8 }).subscribe(res => {
+      this.featuredProducts = res.products;
+    });
+    this.productService.getProducts({ bestSeller: 'true', limit: 10 }).subscribe(res => {
+      this.bestSellers = res.products;
+    });
+    this.couponService.getCoupons().subscribe(coupons => {
+      this.activeCoupons = coupons;
+    });
+  }
 
-    copyCode(code: string) {
-        this.clipboard.copy(code);
-        this.notificationService.alert('Code copied to clipboard!', 'success', 'Copied');
-    }
+  copyCode(code: string) {
+    this.clipboard.copy(code);
+    this.notificationService.alert('Code copied to clipboard!', 'success', 'Copied');
+  }
 
-    getStars(rating: number): string {
-        return '★'.repeat(Math.floor(rating)) + (rating % 1 >= 0.5 ? '½' : '') + '☆'.repeat(5 - Math.ceil(rating));
-    }
+  getStars(rating: number): string {
+    return '★'.repeat(Math.floor(rating)) + (rating % 1 >= 0.5 ? '½' : '') + '☆'.repeat(5 - Math.ceil(rating));
+  }
 
-    prevSlide() { if (this.currentSlide > 0) this.currentSlide--; }
-    nextSlide() { if (this.currentSlide < this.bestSellers.length - 3) this.currentSlide++; }
+  prevSlide() { if (this.currentSlide > 0) this.currentSlide--; }
+  nextSlide() { if (this.currentSlide < this.bestSellers.length - 3) this.currentSlide++; }
 
-    subscribe() {
-        if (this.email) { this.subscribed = true; this.email = ''; }
-    }
+  subscribe() {
+    if (this.email) { this.subscribed = true; this.email = ''; }
+  }
 }

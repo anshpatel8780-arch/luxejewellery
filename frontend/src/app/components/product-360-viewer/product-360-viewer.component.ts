@@ -38,9 +38,8 @@ import { CommonModule } from '@angular/common';
     .viewer-container {
       position: relative;
       width: 100%;
-      height: 100%;
-      min-height: 400px;
-      aspect-ratio: 1;
+      aspect-ratio: 1 / 1;
+      max-height: 400px;
       background: #1A1A1A;
       border-radius: 12px;
       overflow: hidden;
@@ -119,7 +118,7 @@ import { CommonModule } from '@angular/common';
       color: #fff;
       padding: 8px 16px;
       border-radius: 20px;
-      font-size: 0.85rem;
+      font-size: clamp(0.7rem, 2.5vw, 0.85rem);
       display: flex;
       align-items: center;
       gap: 8px;
@@ -129,6 +128,8 @@ import { CommonModule } from '@angular/common';
       box-shadow: 0 4px 6px rgba(0,0,0,0.3);
       opacity: 0.8;
       transition: opacity 0.3s;
+      white-space: nowrap;
+      width: fit-content;
     }
 
     .viewer-content:hover .viewer-hint {
