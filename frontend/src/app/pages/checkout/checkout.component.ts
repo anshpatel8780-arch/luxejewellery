@@ -91,8 +91,18 @@ import { CartItem, Address } from '../../models/product.model';
             <div class="summary-totals">
               <div class="row"><span>Subtotal</span><span>₹{{subtotal | number}}</span></div>
               <div class="row"><span>Shipping</span><span class="free">FREE</span></div>
+              
+              <div class="coupon-section">
+                <div class="coupon-input">
+                  <input [(ngModel)]="couponCode" placeholder="Enter coupon code" [disabled]="appliedCoupon" class="coupon-field">
+                  <button *ngIf="!appliedCoupon" (click)="applyCoupon()" class="btn btn-outline btn-sm apply-btn">Apply</button>
+                  <button *ngIf="appliedCoupon" (click)="removeCoupon()" class="btn btn-danger btn-sm">✕</button>
+                </div>
+                <p *ngIf="appliedCoupon" class="coupon-msg">✅ Coupon <strong>{{appliedCoupon}}</strong> applied!</p>
+              </div>
+
               <div *ngIf="discount > 0" class="row discount">
-                <span>Discount <small class="gold">({{couponCode}})</small></span>
+                <span>Discount <small class="gold">({{appliedCoupon}})</small></span>
                 <span class="green">-₹{{discount | number}}</span>
               </div>
               <div class="row total-row"><span>Total</span><span>₹{{subtotal - discount | number}}</span></div>
@@ -183,6 +193,17 @@ import { CartItem, Address } from '../../models/product.model';
       .summary-item h4 { font-size: 0.85rem; }
       .item-total { font-size: 0.95rem; }
     }
+
+    .coupon-section { margin-top: 15px; padding-top: 15px; border-top: 1px solid #333; margin-bottom: 10px; }
+    .coupon-input { display: flex; gap: 8px; margin-bottom: 6px; }
+    .coupon-field { 
+      flex: 1; padding: 8px 12px; background: #1A1A1A !important; border: 1px solid #444 !important; 
+      border-radius: 8px; color: #fff !important; font-size: 0.85rem; text-transform: uppercase;
+      min-height: 40px;
+    }
+    .apply-btn { min-width: 80px; height: 40px; border: 1px solid #D4AF37; color: #D4AF37; background: transparent; }
+    .apply-btn:hover { background: rgba(212,175,55,0.1); }
+    .coupon-msg { color: #27AE60; font-size: 0.8rem; margin: 4px 0 0; }
   `]
 })
 export class CheckoutComponent implements OnInit {
@@ -190,6 +211,7 @@ export class CheckoutComponent implements OnInit {
   subtotal = 0;
   discount = 0;
   couponCode = '';
+  appliedCoupon = '';
   address = { name: '', phone: '', street: '', city: '', pincode: '' };
   paymentMethod = 'COD';
   placing = false;
@@ -212,27 +234,6 @@ export class CheckoutComponent implements OnInit {
     this.cartService.getCart().subscribe(cart => {
       this.cartItems = cart.products || [];
       this.subtotal = this.cartItems.reduce((sum, item) => sum + (item.productId.price || 0) * item.quantity, 0);
-      
-      // Check for coupon in query params
-      this.route.queryParams.subscribe(params => {
-        if (params['coupon']) {
-          const code = params['coupon'];
-          const validationItems = this.cartItems.map(item => ({
-            productId: item.productId._id,
-            price: item.productId.price,
-            quantity: item.quantity
-          }));
-
-          this.couponService.validateCoupon(code, validationItems, this.subtotal).subscribe({
-            next: (res) => {
-              if (res.valid) {
-                this.discount = res.discount;
-                this.couponCode = res.code;
-              }
-            }
-          });
-        }
-      });
     });
 
     this.addressService.getAddresses().subscribe({
@@ -315,7 +316,7 @@ export class CheckoutComponent implements OnInit {
                 totalPrice: this.subtotal - this.discount,
                 address: this.address,
                 paymentMethod: 'Online',
-                couponCode: this.couponCode || null,
+                couponCode: this.appliedCoupon || null,
                 discountAmount: this.discount
               }).subscribe({
                 next: async (res: any) => { 
@@ -356,7 +357,7 @@ export class CheckoutComponent implements OnInit {
         totalPrice: this.subtotal - this.discount,
         address: this.address,
         paymentMethod: this.paymentMethod,
-        couponCode: this.couponCode || null,
+        couponCode: this.appliedCoupon || null,
         discountAmount: this.discount
       }).subscribe({
         next: async (res: any) => { 
@@ -366,5 +367,35 @@ export class CheckoutComponent implements OnInit {
         error: (err) => { this.error = err.error?.message || 'Failed to place order'; this.placing = false; }
       });
     }
+  }
+
+  applyCoupon() {
+    if (!this.couponCode.trim()) return;
+
+    const validationItems = this.cartItems.map(item => ({
+      productId: item.productId._id,
+      price: item.productId.price,
+      quantity: item.quantity
+    }));
+
+    this.couponService.validateCoupon(this.couponCode, validationItems, this.subtotal).subscribe({
+      next: (res) => {
+        if (res.valid) {
+          this.discount = res.discount;
+          this.appliedCoupon = res.code;
+          this.notificationService.alert(res.message, 'success', 'Coupon Applied');
+        }
+      },
+      error: (err) => {
+        this.notificationService.alert(err.error?.message || 'Invalid coupon code', 'error', 'Error');
+        this.couponCode = '';
+      }
+    });
+  }
+
+  removeCoupon() {
+    this.appliedCoupon = '';
+    this.couponCode = '';
+    this.discount = 0;
   }
 }

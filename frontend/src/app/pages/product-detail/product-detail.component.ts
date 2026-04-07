@@ -16,7 +16,8 @@ import { Product360ViewerComponent } from '../../components/product-360-viewer/p
   imports: [CommonModule, RouterLink, FormsModule, Product360ViewerComponent],
   template: `
     <section class="product-detail" *ngIf="product">
-      <div class="container">
+      <div class="container">git push
+      
         <div class="detail-grid">
           <!-- Image Gallery -->
           <div class="gallery">
@@ -333,7 +334,7 @@ export class ProductDetailComponent implements OnInit {
         this.selectedImage = p.images[0];
       });
       this.reviewService.getProductReviews(productId).subscribe(r => this.reviews = r);
-      
+
       if (this.authService.isLoggedIn()) {
         this.checkReviewEligibility(productId);
       }

@@ -55,22 +55,8 @@ import { FormsModule } from '@angular/forms';
             <div class="summary-row"><span>Subtotal</span><span>₹{{subtotal | number}}</span></div>
             <div class="summary-row"><span>Shipping</span><span class="free">FREE</span></div>
             
-            <div class="coupon-section">
-              <div class="coupon-input">
-                <input [(ngModel)]="couponCode" placeholder="Enter coupon code" [disabled]="appliedCoupon">
-                <button *ngIf="!appliedCoupon" (click)="applyCoupon()" class="btn btn-outline btn-sm">Apply</button>
-                <button *ngIf="appliedCoupon" (click)="removeCoupon()" class="btn btn-danger btn-sm">✕</button>
-              </div>
-              <p *ngIf="appliedCoupon" class="coupon-msg">✅ Coupon <strong>{{appliedCoupon}}</strong> applied!</p>
-            </div>
-
-            <div *ngIf="discount > 0" class="summary-row discount">
-              <span>Discount</span>
-              <span>-₹{{discount | number}}</span>
-            </div>
-
-            <div class="summary-row total"><span>Total</span><span>₹{{subtotal - discount | number}}</span></div>
-            <a routerLink="/checkout" [queryParams]="{coupon: appliedCoupon}" class="btn btn-primary" style="width:100%;margin-top:16px">Proceed to Checkout →</a>
+            <div class="summary-row total"><span>Total</span><span>₹{{subtotal | number}}</span></div>
+            <a routerLink="/checkout" class="btn btn-primary" style="width:100%;margin-top:16px">Proceed to Checkout →</a>
           </div>
         </div>
       </div>
@@ -156,24 +142,11 @@ import { FormsModule } from '@angular/forms';
       .coupon-input .btn { width: 100%; }
     }
 
-    .coupon-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid #333; }
-    .coupon-input { display: flex; gap: 8px; margin-bottom: 8px; }
-    .coupon-input input { 
-      flex: 1; padding: 8px 12px; background: #1A1A1A; border: 1px solid #444; 
-      border-radius: 8px; color: #fff; font-size: 0.85rem; text-transform: uppercase;
-    }
-    .btn-outline { border: 1px solid #D4AF37; color: #D4AF37; background: transparent; }
-    .btn-outline:hover { background: rgba(212,175,55,0.1); }
-    .coupon-msg { color: #27AE60; font-size: 0.8rem; margin: 0; }
-    .discount span:last-child { color: #27AE60; font-weight: 600; }
   `]
 })
 export class CartComponent implements OnInit {
   items: CartItem[] = [];
   subtotal = 0;
-  couponCode = '';
-  discount = 0;
-  appliedCoupon = '';
 
   constructor(
     private cartService: CartService,
@@ -209,40 +182,8 @@ export class CartComponent implements OnInit {
     const removeId = item.productId?._id || item._id;
     if (!removeId) return;
 
-    this.cartService.removeFromCart(removeId).subscribe(() => {
-        this.loadCart();
-        if (this.appliedCoupon) this.removeCoupon(); // Recalculate or remove coupon on item removal
-    });
+    this.cartService.removeFromCart(removeId).subscribe(() => this.loadCart());
   }
 
-  applyCoupon() {
-    if (!this.couponCode.trim()) return;
 
-    // Send cart items as flat array for backend validation
-    const cartItemsForValidation = this.items.map(item => ({
-        productId: item.productId._id,
-        price: item.productId.price,
-        quantity: item.quantity
-    }));
-
-    this.couponService.validateCoupon(this.couponCode, cartItemsForValidation, this.subtotal).subscribe({
-        next: (res) => {
-            if (res.valid) {
-                this.discount = res.discount;
-                this.appliedCoupon = res.code;
-                this.notificationService.alert(res.message, 'success', 'Coupon Applied');
-            }
-        },
-        error: (err) => {
-            this.notificationService.alert(err.error?.message || 'Invalid coupon code', 'error', 'Error');
-            this.couponCode = '';
-        }
-    });
-  }
-
-  removeCoupon() {
-    this.appliedCoupon = '';
-    this.couponCode = '';
-    this.discount = 0;
-  }
 }
