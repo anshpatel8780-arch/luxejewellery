@@ -16,7 +16,7 @@ import { Product360ViewerComponent } from '../../components/product-360-viewer/p
   imports: [CommonModule, RouterLink, FormsModule, Product360ViewerComponent],
   template: `
     <section class="product-detail" *ngIf="product">
-      <div class="container">git push
+      <div class="container">
       
         <div class="detail-grid">
           <!-- Image Gallery -->

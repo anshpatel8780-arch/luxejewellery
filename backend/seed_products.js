@@ -1,198 +1,408 @@
 const mongoose = require('mongoose');
-const dotenv = require('dotenv');
 const Product = require('./models/Product');
-const path = require('path');
-
-dotenv.config({ path: path.join(__dirname, '.env') });
+require('dotenv').config();
 
 const products = [
     {
-        name: "Luxe Diamond Solitaire Ring",
-        price: 85000,
+        name: "Classic Diamond Solitaire Ring",
+        price: 45000,
         category: "Rings",
-        description: "A stunning 18K white gold ring featuring a brilliant solitaire diamond. Perfect for special moments.",
+        description: "A timeless 18K white gold ring featuring a brilliant-cut solitaire diamond. Perfect for engagements.",
         images: [
-            "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800",
-            "https://images.unsplash.com/photo-1543294001-f7cd5d7fb516?w=800",
-            "https://images.unsplash.com/photo-1605100259148-5807903901b7?w=800",
-            "https://images.unsplash.com/photo-1598560912005-7947ff3945bd?w=800"
+            "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1603561591411-0e7d3bfb93b3?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1627225924765-552d44cfbc72?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1598560912005-5976593ac481?auto=format&fit=crop&q=80&w=800"
         ],
-        goldType: "18K Gold",
-        weight: "4.5g",
-        stock: 12,
+        goldType: "18K",
+        weight: "3.5g",
+        stock: 15,
+        rating: 4.8,
+        numReviews: 24,
+        featured: true,
+        bestSeller: true
+    },
+    {
+        name: "Vintage Emerald Pendant",
+        price: 32000,
+        category: "Necklaces",
+        description: "Stunning emerald pendant encased in a delicate 22K gold filigree design. A piece of heritage.",
+        images: [
+            "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1599643477877-537ef5278531?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1531995811006-35cb42e1a021?auto=format&fit=crop&q=80&w=800"
+        ],
+        goldType: "22K",
+        weight: "5.2g",
+        stock: 8,
+        rating: 4.9,
+        numReviews: 12,
         featured: true,
         bestSeller: false
     },
     {
-        name: "Heritage Temple Necklace",
-        price: 145000,
-        category: "Necklaces",
-        description: "Exquisite 22K yellow gold necklace with traditional temple motifs and ruby embellishments.",
-        images: [
-            "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800",
-            "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800",
-            "https://images.unsplash.com/photo-1599643477877-380327f31165?w=800",
-            "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800"
-        ],
-        goldType: "22K Gold",
-        weight: "42.0g",
-        stock: 5,
-        featured: true,
-        bestSeller: true
-    },
-    {
-        name: "Classic Gold Jhumka Earrings",
-        price: 42000,
+        name: "Modern Silver Hoops",
+        price: 3500,
         category: "Earrings",
-        description: "Timeless 22K gold jhumkas with intricate filigree work and small pearl droplets.",
+        description: "Minimalist 925 sterling silver hoop earrings for everyday elegance and comfort.",
         images: [
-            "https://images.unsplash.com/photo-1635767798638-3e25273a8236?w=800",
-            "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800",
-            "https://images.unsplash.com/photo-1629131726692-1accd0c53ce0?w=800",
-            "https://images.unsplash.com/photo-1616781296062-870932069796?w=800"
+            "https://images.unsplash.com/photo-1635767798638-3e25273a8256?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1535633302703-b0703af2939a?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1588444837495-c6cfeb53f32d?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&q=80&w=800"
         ],
-        goldType: "22K Gold",
-        weight: "12.5g",
-        stock: 25,
+        goldType: "Silver",
+        weight: "4.0g",
+        stock: 50,
+        rating: 4.5,
+        numReviews: 45,
         featured: false,
         bestSeller: true
     },
     {
-        name: "Modern Platinum Sleek Bracelet",
-        price: 68000,
-        category: "Bracelets",
-        description: "A minimalist platinum bracelet with a high-polish finish for modern elegance.",
+        name: "Luxury Platinum Chronograph",
+        price: 125000,
+        category: "Watches",
+        description: "Precision-engineered Swiss movement watch with a pure platinum casing and leather strap.",
         images: [
-            "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=800",
-            "https://images.unsplash.com/photo-1573408339305-6562098e99aa?w=800",
-            "https://images.unsplash.com/photo-1613948732890-5036ca7cd666?w=800",
-            "https://images.unsplash.com/photo-1515562141589-67f0d569b4b7?w=800"
+            "https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1508685096489-723f51f97654?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1509152730535-90bb641c97b5?auto=format&fit=crop&q=80&w=800"
         ],
         goldType: "Platinum",
-        weight: "8.2g",
-        stock: 15,
-        featured: false,
-        bestSeller: false
-    },
-    {
-        name: "Ruby & Gold Infinity Ring",
-        price: 35000,
-        category: "Rings",
-        description: "A beautiful 18K gold infinity ring featuring a row of delicate rubies and diamonds.",
-        images: [
-            "https://images.unsplash.com/photo-1588444837495-c6cfeb53f32d?w=800",
-            "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800",
-            "https://images.unsplash.com/photo-1543294001-f7cd5d7fb516?w=800",
-            "https://images.unsplash.com/photo-1584305323473-59728ad2f54d?w=800"
-        ],
-        goldType: "18K Gold",
-        weight: "3.8g",
-        stock: 20,
+        weight: "85g",
+        stock: 5,
+        rating: 5.0,
+        numReviews: 6,
         featured: true,
         bestSeller: false
     },
     {
-        name: "Infinity Rose Gold Band",
-        price: 24000,
-        category: "Rings",
-        description: "Delicate 18K rose gold infinity band encrusted with micro-pave diamonds.",
+        name: "Rose Gold Tennis Bracelet",
+        price: 18000,
+        category: "Bracelets",
+        description: "Elegant 18K rose gold tennis bracelet set with sparkling cubic zirconia strings.",
         images: [
-            "https://images.unsplash.com/photo-1543294001-f7cd5d7fb516?w=800",
-            "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800",
-            "https://images.unsplash.com/photo-1588444837495-c6cfeb53f32d?w=800",
-            "https://images.unsplash.com/photo-1635767798638-3e25273a8236?w=800"
+            "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1573408374415-f4e71276fd96?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=801",
+            "https://images.unsplash.com/photo-1573408374415-f4e71276fd96?auto=format&fit=crop&q=80&w=801"
         ],
-        goldType: "18K Rose Gold",
-        weight: "3.2g",
-        stock: 40,
+        goldType: "18K",
+        weight: "7.8g",
+        stock: 12,
+        rating: 4.7,
+        numReviews: 18,
         featured: false,
-        bestSeller: false
+        bestSeller: true
     },
     {
-        name: "Elite Gold Skeleton Watch",
-        price: 195000,
-        category: "Watches",
-        description: "Premium self-winding watch with an 18K gold case and clear skeleton dial.",
-        images: [
-            "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=800",
-            "https://images.unsplash.com/photo-1557531751-247738241372?w=800",
-            "https://images.unsplash.com/photo-1522312346375-d1ad505d683b?w=800",
-            "https://images.unsplash.com/photo-1539874754764-5a96559165b0?w=800"
-        ],
-        goldType: "18K Gold",
-        weight: "120g",
-        stock: 8,
-        featured: true,
-        bestSeller: false
-    },
-    {
-        name: "Vintage Silver Drop Earrings",
+        name: "Pearl Drop Earrings",
         price: 8500,
         category: "Earrings",
-        description: "Handcrafted 925 sterling silver drop earrings with oxidized finish and sapphire accents.",
+        description: "Genuine freshwater pearls hanging from 22K gold shepherd hooks. Classically beautiful.",
         images: [
-            "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800",
-            "https://images.unsplash.com/photo-1635767798638-3e25273a8236?w=800",
-            "https://images.unsplash.com/photo-1629131726692-1accd0c53ce0?w=800",
-            "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800"
+            "https://images.unsplash.com/photo-1535633302703-b0703af2939a?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1535633302703-b0703af2939a?auto=format&fit=crop&q=80&w=801",
+            "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&q=80&w=801"
         ],
-        goldType: "Sterling Silver",
-        weight: "6.5g",
-        stock: 50,
+        goldType: "22K",
+        weight: "3.2g",
+        stock: 20,
+        rating: 4.6,
+        numReviews: 30,
         featured: false,
         bestSeller: false
     },
     {
-        name: "Bold Gold Cuff Bracelet",
-        price: 54000,
-        category: "Bracelets",
-        description: "Statement 22K gold cuff with unique geometric patterns for an elegant statement.",
+        name: "Men's Solid Gold Band",
+        price: 28000,
+        category: "Rings",
+        description: "Classic 24K pure gold wedding band with a heavy, polished finish for a lifetime.",
         images: [
-            "https://images.unsplash.com/photo-1611085583191-a3b1a308c021?w=800",
-            "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=800",
-            "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=800",
-            "https://images.unsplash.com/photo-1515562141589-67f0d569b4b7?w=800"
+            "https://images.unsplash.com/photo-1627225924765-552d44cfbc72?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1598560912005-5976593ac481?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1627225924765-552d44cfbc72?auto=format&fit=crop&q=80&w=801",
+            "https://images.unsplash.com/photo-1598560912005-5976593ac481?auto=format&fit=crop&q=80&w=801"
         ],
-        goldType: "22K Gold",
-        weight: "18.5g",
+        goldType: "24K",
+        weight: "8.0g",
         stock: 10,
+        rating: 4.9,
+        numReviews: 15,
+        featured: false,
+        bestSeller: true
+    },
+    {
+        name: "Amethyst Statement Necklace",
+        price: 22000,
+        category: "Necklaces",
+        description: "Bold amethyst stones set in a sterling silver multi-strand necklace for a unique look.",
+        images: [
+            "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1599643477877-537ef5278531?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1531995811006-35cb42e1a021?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=801"
+        ],
+        goldType: "Silver",
+        weight: "12.5g",
+        stock: 6,
+        rating: 4.4,
+        numReviews: 8,
+        featured: true,
+        bestSeller: false
+    },
+    {
+        name: "Butterfly Charm Bracelet",
+        price: 5500,
+        category: "Bracelets",
+        description: "Whimsical 18K gold charm bracelet featuring delicate butterfly motifs and a safety chain.",
+        images: [
+            "https://images.unsplash.com/photo-1573408374415-f4e71276fd96?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1573408374415-f4e71276fd96?auto=format&fit=crop&q=80&w=801",
+            "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=801"
+        ],
+        goldType: "18K",
+        weight: "4.5g",
+        stock: 25,
+        rating: 4.7,
+        numReviews: 22,
         featured: false,
         bestSeller: false
     },
     {
-        name: "Dainty Gold Butterfly Pendant",
-        price: 18000,
-        category: "Necklaces",
-        description: "Sweet and simple 22K gold butterfly pendant on a thin gold chain.",
+        name: "Sapphire Stud Earrings",
+        price: 15000,
+        category: "Earrings",
+        description: "Deep blue sapphires claw-set in premium 18K white gold. Minimalist and elegant.",
         images: [
-            "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800",
-            "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800",
-            "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800",
-            "https://images.unsplash.com/photo-1611085583191-a3b1a308c021?w=800"
+            "https://images.unsplash.com/photo-1588444837495-c6cfeb53f32d?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1588444837495-c6cfeb53f32d?auto=format&fit=crop&q=80&w=801",
+            "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&q=80&w=801"
         ],
-        goldType: "22K Gold",
-        weight: "3.5g",
-        stock: 35,
+        goldType: "18K",
+        weight: "2.8g",
+        stock: 10,
+        rating: 4.8,
+        numReviews: 14,
+        featured: true,
+        bestSeller: false
+    },
+    {
+        name: "Gold Quartz Watch",
+        price: 45000,
+        category: "Watches",
+        description: "Elegant rectangular watch face with 22K gold plating and a mesh bracelet.",
+        images: [
+            "https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1508685096489-723f51f97654?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?auto=format&fit=crop&q=80&w=801",
+            "https://images.unsplash.com/photo-1508685096489-723f51f97654?auto=format&fit=crop&q=80&w=801"
+        ],
+        goldType: "22K",
+        weight: "45g",
+        stock: 7,
+        rating: 4.6,
+        numReviews: 11,
         featured: false,
+        bestSeller: false
+    },
+    {
+        name: "Ruby Infinity Ring",
+        price: 19500,
+        category: "Rings",
+        description: "Infinity symbol ring crafted from 18K gold and adorned with small rubies. Symbolic of forever.",
+        images: [
+            "https://images.unsplash.com/photo-1603561591411-0e7d3bfb93b3?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1627225924765-552d44cfbc72?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1603561591411-0e7d3bfb93b3?auto=format&fit=crop&q=80&w=801",
+            "https://images.unsplash.com/photo-1627225924765-552d44cfbc72?auto=format&fit=crop&q=80&w=801"
+        ],
+        goldType: "18K",
+        weight: "3.0g",
+        stock: 14,
+        rating: 4.7,
+        numReviews: 20,
+        featured: false,
+        bestSeller: true
+    },
+    {
+        name: "Tribal Silver Bangle",
+        price: 4200,
+        category: "Bracelets",
+        description: "Handcrafted ethnic bangle made from pure silver with intricate tribal engravings.",
+        images: [
+            "https://images.unsplash.com/photo-1535633302703-b0703af2939a?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1535633302703-b0703af2939a?auto=format&fit=crop&q=80&w=801",
+            "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=801"
+        ],
+        goldType: "Silver",
+        weight: "15.0g",
+        stock: 30,
+        rating: 4.5,
+        numReviews: 35,
+        featured: false,
+        bestSeller: false
+    },
+    {
+        name: "Diamond Choker Necklace",
+        price: 85000,
+        category: "Necklaces",
+        description: "Exquisite choker featuring a line of brilliant diamonds set in platinum. Modern and bold.",
+        images: [
+            "https://images.unsplash.com/photo-1599643477877-537ef5278531?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1531995811006-35cb42e1a021?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1599643477877-537ef5278531?auto=format&fit=crop&q=80&w=801",
+            "https://images.unsplash.com/photo-1531995811006-35cb42e1a021?auto=format&fit=crop&q=80&w=801"
+        ],
+        goldType: "Platinum",
+        weight: "18.5g",
+        stock: 3,
+        rating: 5.0,
+        numReviews: 5,
+        featured: true,
+        bestSeller: false
+    },
+    {
+        name: "Opal Earrings",
+        price: 11000,
+        category: "Earrings",
+        description: "Iridescent opals that catch the light from every angle, set in 18K yellow gold.",
+        images: [
+            "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1535633302703-b0703af2939a?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&q=80&w=801",
+            "https://images.unsplash.com/photo-1535633302703-b0703af2939a?auto=format&fit=crop&q=80&w=801"
+        ],
+        goldType: "18K",
+        weight: "3.5g",
+        stock: 9,
+        rating: 4.7,
+        numReviews: 16,
+        featured: false,
+        bestSeller: false
+    },
+    {
+        name: "Designer Steel & Gold Watch",
+        price: 65000,
+        category: "Watches",
+        description: "Two-tone surgical steel and 18K gold watch for the modern professional with style.",
+        images: [
+            "https://images.unsplash.com/photo-1508685096489-723f51f97654?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1508685096489-723f51f97654?auto=format&fit=crop&q=80&w=801",
+            "https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?auto=format&fit=crop&q=80&w=801"
+        ],
+        goldType: "18K",
+        weight: "110g",
+        stock: 4,
+        rating: 4.9,
+        numReviews: 9,
+        featured: true,
+        bestSeller: true
+    },
+    {
+        name: "Emerald Cut Topaz Ring",
+        price: 16500,
+        category: "Rings",
+        description: "Large emerald-cut blue topaz set in a 22K gold shank. Stunning clarity and color.",
+        images: [
+            "https://images.unsplash.com/photo-1598560912005-5976593ac481?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1627225924765-552d44cfbc72?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1598560912005-5976593ac481?auto=format&fit=crop&q=80&w=801",
+            "https://images.unsplash.com/photo-1627225924765-552d44cfbc72?auto=format&fit=crop&q=80&w=801"
+        ],
+        goldType: "22K",
+        weight: "5.5g",
+        stock: 11,
+        rating: 4.6,
+        numReviews: 13,
+        featured: false,
+        bestSeller: false
+    },
+    {
+        name: "Heart Silhouette Necklace",
+        price: 6800,
+        category: "Necklaces",
+        description: "Simple and elegant open heart pendant on a fine 18K gold chain. A gift of love.",
+        images: [
+            "https://images.unsplash.com/photo-1531995811006-35cb42e1a021?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1599643477877-537ef5278531?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1531995811006-35cb42e1a021?auto=format&fit=crop&q=80&w=801",
+            "https://images.unsplash.com/photo-1599643477877-537ef5278531?auto=format&fit=crop&q=80&w=801"
+        ],
+        goldType: "18K",
+        weight: "2.5g",
+        stock: 40,
+        rating: 4.8,
+        numReviews: 52,
+        featured: false,
+        bestSeller: true
+    },
+    {
+        name: "Cuff Bracelet in Platinum",
+        price: 55000,
+        category: "Bracelets",
+        description: "Sleek and minimalist platinum cuff bracelet with a mirror finish. Substantial and premium.",
+        images: [
+            "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1573408374415-f4e71276fd96?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=801",
+            "https://images.unsplash.com/photo-1573408374415-f4e71276fd96?auto=format&fit=crop&q=80&w=801"
+        ],
+        goldType: "Platinum",
+        weight: "22.0g",
+        stock: 4,
+        rating: 4.9,
+        numReviews: 7,
+        featured: true,
+        bestSeller: false
+    },
+    {
+        name: "Temple Design Earrings",
+        price: 38000,
+        category: "Earrings",
+        description: "Traditional Indian temple jewellery earrings in 24K pure gold with exquisite detail.",
+        images: [
+            "https://images.unsplash.com/photo-1630019017590-f00496aa9021?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&q=80&w=800",
+            "https://images.unsplash.com/photo-1630019017590-f00496aa9021?auto=format&fit=crop&q=80&w=801",
+            "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&q=80&w=801"
+        ],
+        goldType: "24K",
+        weight: "12.0g",
+        stock: 6,
+        rating: 5.0,
+        numReviews: 10,
+        featured: true,
         bestSeller: false
     }
 ];
 
 async function seedProducts() {
     try {
-        const uri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/jewellery';
-        await mongoose.connect(uri);
-        console.log('Connected to MongoDB...');
+        await mongoose.connect(process.env.MONGO_URI);
+        console.log('Connected to MongoDB.');
 
+        // Clear existing products for a clean start with 4 images each
         await Product.deleteMany({});
-        console.log('Cleared all non-matching products.');
+        console.log('Cleared existing products.');
 
-        await Product.insertMany(products);
-        console.log('Successfully seeded 10 premium JEWELLERY ONLY products.');
+        for (const productData of products) {
+            await Product.create(productData);
+            console.log(`Created product: ${productData.name}`);
+        }
 
-        process.exit();
-    } catch (error) {
-        console.error('Seeding failed:', error);
+        console.log('Seed completed successfully with multi-angle images.');
+        process.exit(0);
+    } catch (err) {
+        console.error('Error seeding products:', err);
         process.exit(1);
     }
 }
