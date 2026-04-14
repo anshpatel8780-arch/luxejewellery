@@ -12,8 +12,8 @@ import { AuthService } from '../../services/auth.service';
     <section class="auth-page">
       <div class="auth-card animate-fadeInUp">
         <div class="auth-header">
-          <img src="assets/logo.png" alt="LuxeJewels Logo" class="auth-logo">
-          <h1>Join LuxeJewels</h1>
+          <img src="assets/logo.png" alt="Kairo Jewellery Logo" class="auth-logo">
+          <h1>Join Kairo Jewellery</h1>
           <p>Create your account to start shopping</p>
         </div>
         <form (ngSubmit)="register()">

@@ -11,7 +11,7 @@ import { RouterLink } from '@angular/router';
         <div class="footer-grid">
           <div class="footer-col brand-col">
             <a routerLink="/" class="footer-logo">
-              <img src="assets/logo.png" alt="LuxeJewels Logo" class="footer-logo-img">
+              <img src="assets/logo.png" alt="Kairo Jewellery Logo" class="footer-logo-img">
             </a>
             <p>Discover the finest collection of handcrafted jewellery. Premium quality, timeless elegance, and exceptional craftsmanship since 1995.</p>
             <div class="social-links">
@@ -43,13 +43,13 @@ import { RouterLink } from '@angular/router';
             <h4>Contact Info</h4>
             <p><i class="fa-solid fa-location-dot"></i> 123 Jewellery Lane, Mumbai, India</p>
             <p><i class="fa-solid fa-phone"></i> +91 98765 43210</p>
-            <p><i class="fa-solid fa-envelope"></i> info&#64;luxejewels.com</p>
+            <p><i class="fa-solid fa-envelope"></i> info&#64;kairo-jewellery.com</p>
             <p><i class="fa-solid fa-clock"></i> Mon-Sat: 10AM - 8PM</p>
           </div>
         </div>
 
         <div class="footer-bottom">
-          <p>&copy; 2024 LuxeJewels. All Rights Reserved. Crafted with <i class="fa-solid fa-heart" style="color: #D4AF37;"></i></p>
+          <p>&copy; 2024 Kairo Jewellery. All Rights Reserved. Crafted with <i class="fa-solid fa-heart" style="color: #D4AF37;"></i></p>
         </div>
       </div>
     </footer>

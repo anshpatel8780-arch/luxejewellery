@@ -18,7 +18,7 @@ import { RouterLink } from '@angular/router';
         <div class="about-content">
           <div class="about-text animate-fadeInUp">
             <h2>Crafting Elegance Since 1995</h2>
-            <p>LuxeJewels was founded with a singular vision — to bring the finest quality handcrafted jewellery to discerning customers who appreciate artistry and excellence. Every piece in our collection tells a story of meticulous craftsmanship, premium materials, and timeless design.</p>
+            <p>Kairo Jewellery was founded with a singular vision — to bring the finest quality handcrafted jewellery to discerning customers who appreciate artistry and excellence. Every piece in our collection tells a story of meticulous craftsmanship, premium materials, and timeless design.</p>
             <p>Our master artisans blend traditional techniques with contemporary aesthetics, creating pieces that transcend trends and become cherished heirlooms. From engagement rings that symbolize eternal love to statement necklaces that command attention, each creation undergoes rigorous quality checks to ensure it meets our exacting standards.</p>
           </div>
 

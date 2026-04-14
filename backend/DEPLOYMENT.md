@@ -1,6 +1,6 @@
-# 🚀 Render Deployment Guide: LuxeJewels Backend
+# 🚀 Render Deployment Guide: Kairo Jewellery Backend
 
-This guide outlines the steps to successfully deploy the LuxeJewels API to Render.
+This guide outlines the steps to successfully deploy the Kairo Jewellery API to Render.
 
 ## 📋 Required Environment Variables
 

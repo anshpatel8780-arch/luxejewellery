@@ -306,7 +306,7 @@ export class CheckoutComponent implements OnInit {
             key: 'rzp_test_Ryyer6VAKb8h6g', // Set your key ID
             amount: orderData.amount,
             currency: orderData.currency,
-            name: 'LUXEJEWELS',
+            name: 'KAIRO JEWELLERY',
             description: 'Premium Jewellery Order',
             order_id: orderData.orderId,
             handler: (response: any) => {

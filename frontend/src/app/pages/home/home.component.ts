@@ -18,7 +18,7 @@ import { Clipboard as CdkClipboard, ClipboardModule } from '@angular/cdk/clipboa
       <div class="hero-overlay"></div>
       <div class="hero-content animate-fadeInUp">
         <span class="hero-badge">✨ Premium Collection 2026</span>
-        <h1>LuxeJewels<br><span class="gold">fine handcrafted jewellery</span></h1>
+        <h1>Kairo Jewellery<br><span class="gold">fine handcrafted jewellery</span></h1>
         <p>Discover exquisite handcrafted jewellery that reflects your unique style. Timeless elegance meets modern sophistication.</p>
         <div class="hero-btns">
           <a routerLink="/shop" class="btn btn-primary">Shop Now →</a>
@@ -149,7 +149,7 @@ import { Clipboard as CdkClipboard, ClipboardModule } from '@angular/cdk/clipboa
     <section class="section why-section">
       <div class="container">
         <div class="section-title">
-          <span class="section-tag">Why LuxeJewels</span>
+          <span class="section-tag">Why Kairo Jewellery</span>
           <h2>Why Choose Us</h2>
         </div>
         <div class="why-grid">

@@ -1,7 +1,7 @@
-# 💎 LuxeJewels: Unabridged Technical Architecture & Deep Dive
+# 💎 Kairo Jewellery: Unabridged Technical Architecture & Deep Dive
 
 ## 1. High-Level Architecture
-LuxeJewels follows a decoupled **Client-Server Architecture**, consisting of a RESTful API backend and a Single Page Application (SPA) frontend. 
+Kairo Jewellery follows a decoupled **Client-Server Architecture**, consisting of a RESTful API backend and a Single Page Application (SPA) frontend. 
 
 * **Frontend:** Built with **Angular 17** using modern Standalone Components (bypassing legacy NgModules), heavily relying on RxJS for reactive state management and Angular Router for lazy-loaded route splitting.
 * **Backend:** Built with **Node.js & Express.js**, following the classic MVC (Model-View-Controller) structure, but adapted for API serving (routes -> controllers -> models).

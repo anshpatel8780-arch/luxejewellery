@@ -7,7 +7,7 @@ const testChat = async () => {
         const response = await axios.post('http://localhost:5000/api/chat/send', {
             message: 'Hello, what gold rings do you have?',
             history: [
-                { role: 'bot', content: 'Welcome to LuxeJewels! I am your AI Assistant. How can I help you discover our premium handcrafted jewellery today?' }
+                { role: 'bot', content: 'Welcome to Kairo Jewellery! I am your AI Assistant. How can I help you discover our premium handcrafted jewellery today?' }
             ]
         });
 

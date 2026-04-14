@@ -22,7 +22,7 @@ export class ChatService {
     // Basic welcome message
     this.messagesSubject.next([{
       role: 'bot',
-      content: 'Welcome to LuxeJewels! I am your AI Assistant. How can I help you discover our premium handcrafted jewellery today?',
+      content: 'Welcome to Kairo Jewellery! I am your AI Assistant. How can I help you discover our premium handcrafted jewellery today?',
       timestamp: new Date()
     }]);
   }

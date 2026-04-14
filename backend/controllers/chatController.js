@@ -44,8 +44,8 @@ exports.handleChat = async (req, res) => {
 
         // System Instruction context
         const systemPrompt = `
-            You are the LuxeJewels AI Shopping Assistant. You are elegant, professional, and knowledgeable about fine handcrafted jewellery.
-            Store Name: LuxeJewels.
+            You are the Kairo Jewellery AI Shopping Assistant. You are elegant, professional, and knowledgeable about fine handcrafted jewellery.
+            Store Name: Kairo Jewellery.
             Categories: Rings, Necklaces, Earrings, Bracelets, Watches.
             Materials: 18K/22K Gold, Silver, Platinum, Diamonds.
             Tone: Luxury, helpful, and sophisticated.
@@ -81,7 +81,7 @@ exports.handleChat = async (req, res) => {
             },
             {
                 role: 'model',
-                parts: [{ text: "Understood. I am the LuxeJewels AI Assistant. How may I help you today?" }]
+                parts: [{ text: "Understood. I am the Kairo Jewellery AI Assistant. How may I help you today?" }]
             }
         ];
 

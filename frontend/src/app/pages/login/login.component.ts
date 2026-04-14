@@ -13,7 +13,7 @@ import { AuthService } from '../../services/auth.service';
       <div class="glow-sphere"></div>
       <div class="auth-card animate-fadeInUp">
         <div class="auth-header">
-          <img src="assets/logo.png" alt="LuxeJewels Logo" class="auth-logo">
+          <img src="assets/logo.png" alt="Kairo Jewellery Logo" class="auth-logo">
           <h1 class="premium-heading">Welcome Back</h1>
           <p class="premium-sub">Sign in to your heritage of elegance</p>
         </div>

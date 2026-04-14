@@ -61,7 +61,7 @@ import { AuthService } from '../../services/auth.service';
             <div class="info-card">
               <span class="info-icon">✉️</span>
               <h3>Email Us</h3>
-              <p>info&#64;luxejewels.com<br>support&#64;luxejewels.com</p>
+              <p>info&#64;kairo-jewellery.com<br>support&#64;kairo-jewellery.com</p>
             </div>
           </div>
         </div>

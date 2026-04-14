@@ -12,7 +12,7 @@ import { CartService } from '../../services/cart.service';
     <nav class="navbar" [class.scrolled]="isScrolled" [class.mobile-open]="mobileOpen">
       <div class="nav-container">
         <a routerLink="/" class="logo">
-          <img src="assets/logo.png" alt="LuxeJewels Logo" class="logo-img">
+          <img src="assets/logo.png" alt="Kairo Jewellery Logo" class="logo-img">
         </a>
 
         <div class="nav-links" [class.active]="mobileOpen">

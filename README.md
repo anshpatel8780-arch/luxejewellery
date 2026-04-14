@@ -6,7 +6,7 @@
   <img src="https://img.shields.io/badge/TypeScript-Typed-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
 </p>
 
-<h1 align="center">💎 LuxeJewels — Premium Jewellery E-Commerce</h1>
+<h1 align="center">💎 Kairo Jewellery — Premium Jewellery E-Commerce</h1>
 
 <p align="center">
   A modern, luxury jewellery e-commerce platform with a stunning <strong>Black & Gold</strong> circular branding, full shopping experience, admin panel, and REST API backend.
@@ -35,7 +35,7 @@
 
 ## 🌟 Overview
 
-**LuxeJewels** is a full-stack jewellery e-commerce website inspired by premium brands like **Tanishq**, **Malabar Gold**, and **Kalyan Jewellers**. It features:
+**Kairo Jewellery** is a full-stack jewellery e-commerce website inspired by premium brands like **Tanishq**, **Malabar Gold**, and **Kalyan Jewellers**. It features:
 
 - 🛍️ **Complete shopping experience** — browse, filter, search, cart, checkout
 - 👤 **Premium User Profiles** — Full-width dashboard with an advanced image upload system (**100MB limit**), custom Multer filtering, and account statistics
@@ -337,7 +337,7 @@ Backend:   http://localhost:5000
 |---------|------------|
 | **Login** | Email + Password, error messages, role-based redirect (admin → `/admin`, user → `/dashboard`) |
 | **Register** | Name, Email, Phone, Password with validation (min 6 chars) |
-| **Design** | Centered card with radial gradient background, **Circular LuxeJewels Logo** |
+| **Design** | Centered card with radial gradient background, **Circular Kairo Jewellery Logo** |
 
 ---
 
@@ -646,5 +646,5 @@ This project is for educational and portfolio purposes.
 ---
 
 <p align="center">
-  Crafted with 💛 by LuxeJewels Team
+  Crafted with 💛 by Kairo Jewellery Team
 </p>

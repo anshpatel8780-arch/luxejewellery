@@ -1,18 +1,18 @@
-# LuxeJewels: System Design & Architecture Diagrams
+# Kairo Jewellery: System Design & Architecture Diagrams
 
-This document contains the comprehensive project profile, system design principles, Data Flow Diagrams (DFDs), Entity Relationship (ER) diagrams, and UML diagrams for the LuxeJewels application.
+This document contains the comprehensive project profile, system design principles, Data Flow Diagrams (DFDs), Entity Relationship (ER) diagrams, and UML diagrams for the Kairo Jewellery application.
 
 ---
 
 ## 1. Project Profile & Description
 
-**Project Name**: LuxeJewels
+**Project Name**: Kairo Jewellery
 **Project Type**: Premium E-Commerce Web Application
 **Domain**: Jewellery Retail
 **Target Audience**: Customers looking to buy premium rings, necklaces, earrings, bracelets, and watches online.
 
 ### Project Description
-LuxeJewels is a full-stack, responsive, and secure e-commerce platform designed to simulate a high-end jewellery shopping experience. It features continuous cart syncing, wishlist management, product reviews, and an administrative quadrant for inventory and order management.
+Kairo Jewellery is a full-stack, responsive, and secure e-commerce platform designed to simulate a high-end jewellery shopping experience. It features continuous cart syncing, wishlist management, product reviews, and an administrative quadrant for inventory and order management.
 
 **Core Technology Stack**:
 - **Frontend**: Angular 17 (Standalone Components, RxJS, TypeScript)
@@ -63,7 +63,7 @@ A high-level overview showing the system's interactions with its external entiti
 
 ```mermaid
 flowchart LR
-    User([Customer]) -- "Search, Browse, Add to Cart, Checkout" --> System[LuxeJewels System]
+    User([Customer]) -- "Search, Browse, Add to Cart, Checkout" --> System[Kairo Jewellery System]
     System -- "Products, Invoices, Order Status" --> User
     Admin([Administrator]) -- "Manage Inventory, Process Orders" --> System
     System -- "Sales Analytics, Dashboard Stats" --> Admin
@@ -154,7 +154,7 @@ flowchart LR
     User([User])
     Admin([Admin])
     
-    subgraph LuxeJewels Application
+    subgraph Kairo Jewellery Application
         UC1(Browse & Filter Products)
         UC2(Manage Cart & Wishlist)
         UC3(Checkout & Place Order)

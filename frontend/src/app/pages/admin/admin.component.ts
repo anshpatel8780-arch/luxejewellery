@@ -21,7 +21,7 @@ import { Product, Order, User, OrderStats, Coupon } from '../../models/product.m
         <button class="mobile-toggle-btn" (click)="toggleSidebar()">
           <i class="fa-solid" [ngClass]="showMobileSidebar ? 'fa-xmark' : 'fa-bars'"></i>
         </button>
-        <span class="mobile-title">LUXEJEWELS ADMIN</span>
+        <span class="mobile-title">KAIRO JEWELLERY ADMIN</span>
       </header>
 
       <!-- Sidebar Navigation -->
