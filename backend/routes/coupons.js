@@ -44,14 +44,28 @@ router.post('/', auth, admin, async (req, res) => {
 
         // Send email to all users if it's a global coupon
         if (coupon.scope === 'all') {
-            User.find({}, 'name email').then(users => {
-                users.forEach(user => {
-                    sendCouponAnnouncementEmail(user, coupon).catch(err => 
-                        console.error(`Error sending coupon email to ${user.email}:`, err)
-                    );
-                });
-                console.log(`📡 Started mass email for coupon ${coupon.code} to ${users.length} users.`);
-            }).catch(err => console.error('Error fetching users for coupon email:', err));
+            (async () => {
+                try {
+                    const users = await User.find({}, 'name email');
+                    console.log(`📡 Group Email for coupon ${coupon.code}: Targeting ${users.length} users.`);
+                    
+                    let successCount = 0;
+                    let failCount = 0;
+
+                    for (const user of users) {
+                        try {
+                            await sendCouponAnnouncementEmail(user, coupon);
+                            successCount++;
+                        } catch (err) {
+                            console.error(`❌ Failed to send coupon email to ${user.email}:`, err.message);
+                            failCount++;
+                        }
+                    }
+                    console.log(`✅ Coupon broadcast finished: ${successCount} sent, ${failCount} failed.`);
+                } catch (err) {
+                    console.error('❌ Error in mass coupon email broadcast:', err);
+                }
+            })();
         }
     } catch (err) {
         console.error('Coupon Creation Error:', err);

@@ -35,7 +35,7 @@ const generateInvoicePDF = (order) => {
             doc.text('123, Diamond Avenue, Surat,', 40, startY + 28);
             doc.text('Gujarat, India - 395006', 40, startY + 41);
             doc.text('GST Registration No: 24AAACL1234A1Z5', 40, startY + 54);
-            doc.text('Contact: support@luxejewellery.com', 40, startY + 67);
+            doc.text('Contact: support@kairo-jewellery.com', 40, startY + 67);
 
             // Invoice Details (Right Side)
             const detailsX = 350;

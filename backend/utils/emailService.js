@@ -365,7 +365,7 @@ const sendContactEmail = async (contactData) => {
                 'content-type': 'application/json'
             },
             body: JSON.stringify({
-                sender: { name: "Luxe Contact Form", email: process.env.EMAIL_FROM },
+                sender: { name: "Kairo Contact Form", email: process.env.EMAIL_FROM },
                 to: [{ email: process.env.EMAIL_FROM }],
                 replyTo: { email: email },
                 subject: `📩 New Inquiry: ${subject || 'Contact Form'}`,
