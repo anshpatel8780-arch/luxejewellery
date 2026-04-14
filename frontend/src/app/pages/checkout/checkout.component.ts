@@ -94,8 +94,8 @@ import { CartItem, Address } from '../../models/product.model';
               
               <div class="coupon-section">
                 <div class="coupon-input">
-                  <input [(ngModel)]="couponCode" placeholder="Enter coupon code" [disabled]="appliedCoupon" class="coupon-field">
-                  <button *ngIf="!appliedCoupon" (click)="applyCoupon()" class="btn btn-outline btn-sm apply-btn">Apply</button>
+                  <input type="text" id="couponField" name="couponCode" [(ngModel)]="couponCode" placeholder="Enter coupon code" [readOnly]="appliedCoupon" class="coupon-field">
+                  <button *ngIf="!appliedCoupon" (click)="applyCoupon()" class="btn btn-outline btn-sm apply-btn" [disabled]="!couponCode.trim()">Apply</button>
                   <button *ngIf="appliedCoupon" (click)="removeCoupon()" class="btn btn-danger btn-sm">✕</button>
                 </div>
                 <p *ngIf="appliedCoupon" class="coupon-msg">✅ Coupon <strong>{{appliedCoupon}}</strong> applied!</p>
@@ -194,16 +194,31 @@ import { CartItem, Address } from '../../models/product.model';
       .item-total { font-size: 0.95rem; }
     }
 
-    .coupon-section { margin-top: 15px; padding-top: 15px; border-top: 1px solid #333; margin-bottom: 10px; }
-    .coupon-input { display: flex; gap: 8px; margin-bottom: 6px; }
+    .coupon-section { margin-top: 15px; padding-top: 15px; border-top: 1px solid #333; margin-bottom: 10px; position: relative; z-index: 5; }
+    .coupon-input { display: flex; gap: 8px; margin-bottom: 6px; position: relative; }
     .coupon-field { 
-      flex: 1; padding: 8px 12px; background: #1A1A1A !important; border: 1px solid #444 !important; 
-      border-radius: 8px; color: #fff !important; font-size: 0.85rem; text-transform: uppercase;
-      min-height: 40px;
+      flex: 1; padding: 12px 15px; background: #1A1A1A; border: 1px solid #444; 
+      border-radius: 8px; color: #fff; font-size: 0.9rem; text-transform: uppercase;
+      min-height: 44px; cursor: text; transition: all 0.3s ease;
+      position: relative; z-index: 10;
     }
-    .apply-btn { min-width: 80px; height: 40px; border: 1px solid #D4AF37; color: #D4AF37; background: transparent; }
-    .apply-btn:hover { background: rgba(212,175,55,0.1); }
-    .coupon-msg { color: #27AE60; font-size: 0.8rem; margin: 4px 0 0; }
+    .coupon-field:focus {
+      border-color: #D4AF37;
+      background: #222;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+    }
+    .coupon-field:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      border-color: #27AE60;
+    }
+    .apply-btn { 
+      min-width: 90px; height: 44px; border: 1px solid #D4AF37; color: #D4AF37; 
+      background: transparent; border-radius: 8px; cursor: pointer; font-weight: 600;
+    }
+    .apply-btn:hover:not(:disabled) { background: rgba(212,175,55,0.1); }
+    .coupon-msg { color: #27AE60; font-size: 0.85rem; margin: 8px 0 0; font-weight: 500; }
   `]
 })
 export class CheckoutComponent implements OnInit {
