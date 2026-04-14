@@ -402,6 +402,13 @@ const sendCouponAnnouncementEmail = async (user, coupon) => {
                     <h3 style="margin:0;color:#ffffff;font-size:42px;font-weight:800;">${discountText}</h3>
                     <p style="margin:20px 0;color:#ffffff;font-size:24px;font-weight:700;letter-spacing:4px;">CODE: ${coupon.code}</p>
                   </div>
+                  
+                  <div style="margin-top:40px;">
+                    <a href="${process.env.FRONTEND_URL || 'https://kairojewels.vercel.app'}" 
+                       style="background:linear-gradient(135deg,#c9a96e 0%,#8b6914 100%);color:#ffffff;padding:16px 40px;border-radius:12px;text-decoration:none;font-weight:700;font-size:16px;text-transform:uppercase;letter-spacing:1px;display:inline-block;box-shadow:0 10px 20px rgba(139, 105, 20, 0.4);">
+                       Shop & Use Now
+                    </a>
+                  </div>
                 </td>
               </tr>
             </table>
