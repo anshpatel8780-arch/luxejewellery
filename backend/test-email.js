@@ -23,11 +23,11 @@ async function runTest() {
 
         console.log('2. Sending Test Email...');
         const info = await transporter.sendMail({
-            from: `"Luxé Test" <${process.env.EMAIL_USER}>`,
+            from: `"Kairo Test" <${process.env.EMAIL_USER}>`,
             to: process.env.EMAIL_USER, // Send to self
             subject: '📦 SMTP Delivery Test',
             text: 'Your email server is configured correctly!',
-            html: '<h3>Success!</h3><p>Your email server is configured correctly for <b>Luxé Jewellery</b>.</p>',
+            html: '<h3>Success!</h3><p>Your email server is configured correctly for <b>Kairo Jewellery</b>.</p>',
         });
 
         console.log('✓ Email Sent Successfully!');

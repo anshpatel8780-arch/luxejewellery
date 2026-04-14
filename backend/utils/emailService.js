@@ -4,19 +4,19 @@ const generateOTP = () => {
 
 const sendOTPEmail = async (toEmail, otp, purpose = 'register-verify') => {
     const subjectMap = {
-        'register-verify': '✨ Verify Your Luxé Account – OTP Inside',
-        'forgot-password': '🔐 Reset Your Luxé Password – OTP Inside',
-        'login-verify': '🛡️ Your Luxé Login Verification Code',
+        'register-verify': '✨ Verify Your Kairo Account – OTP Inside',
+        'forgot-password': '🔐 Reset Your Kairo Password – OTP Inside',
+        'login-verify': '🛡️ Your Kairo Login Verification Code',
     };
 
     const headlineMap = {
-        'register-verify': 'Welcome to Luxé Jewellery! 💎',
+        'register-verify': 'Welcome to Kairo Jewellery! 💎',
         'forgot-password': 'Password Reset Request',
         'login-verify': 'Login Verification',
     };
 
     const bodyMap = {
-        'register-verify': 'Thank you for registering with <strong>Luxé Jewellery</strong>. Please use the OTP below to verify your email address and activate your account.',
+        'register-verify': 'Thank you for registering with <strong>Kairo Jewellery</strong>. Please use the OTP below to verify your email address and activate your account.',
         'forgot-password': 'We received a request to reset your password. Use the OTP below to proceed. If you did not request this, please ignore this email.',
         'login-verify': 'A login attempt was made on your account. Please use the OTP below to confirm your identity.',
     };
@@ -36,7 +36,7 @@ const sendOTPEmail = async (toEmail, otp, purpose = 'register-verify') => {
             <table width="580" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
               <tr>
                 <td style="background:linear-gradient(135deg,#c9a96e 0%,#8b6914 100%);padding:36px 40px;text-align:center;">
-                  <h1 style="color:#ffffff;margin:0;font-size:26px;letter-spacing:2px;font-weight:700;">💎 LUXÉ JEWELLERY</h1>
+                  <h1 style="color:#ffffff;margin:0;font-size:26px;letter-spacing:2px;font-weight:700;">💎 KAIRO JEWELLERY</h1>
                   <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;font-size:13px;letter-spacing:1px;">LUXURY • ELEGANCE • TIMELESS</p>
                 </td>
               </tr>
@@ -62,7 +62,7 @@ const sendOTPEmail = async (toEmail, otp, purpose = 'register-verify') => {
               </tr>
               <tr>
                 <td style="background:#f9f5f0;padding:20px 40px;text-align:center;border-top:1px solid #ece8e1;">
-                  <p style="margin:0;color:#aaa;font-size:12px;">© ${new Date().getFullYear()} Luxé Jewellery. All rights reserved.</p>
+                  <p style="margin:0;color:#aaa;font-size:12px;">© ${new Date().getFullYear()} Kairo Jewellery. All rights reserved.</p>
                   <p style="margin:6px 0 0;color:#aaa;font-size:12px;">If you did not request this, please ignore this email.</p>
                 </td>
               </tr>
@@ -106,19 +106,19 @@ const sendOrderCancellationEmail = async (user, order, type) => {
     let subject, headline, body;
 
     if (type === 'CANCEL_INSTANT') {
-        subject = '🚫 Order Cancelled – Luxé Jewellery';
+        subject = '🚫 Order Cancelled – Kairo Jewellery';
         headline = 'Your Order Has Been Cancelled';
         body = `Your order <strong>#${order._id}</strong> has been successfully cancelled. The items have been returned to our inventory.`;
     } else if (type === 'CANCEL_REQUESTED') {
-        subject = '⏳ Cancellation Request Received – Luxé Jewellery';
+        subject = '⏳ Cancellation Request Received – Kairo Jewellery';
         headline = 'Cancellation Request Pending';
         body = `We have received your request to cancel order <strong>#${order._id}</strong>. Our team will review it and notify you shortly.`;
     } else if (type === 'CANCEL_APPROVED') {
-        subject = '✅ Cancellation Approved – Luxé Jewellery';
+        subject = '✅ Cancellation Approved – Kairo Jewellery';
         headline = 'Your Cancellation Request Was Approved';
         body = `Good news! Your cancellation request for order <strong>#${order._id}</strong> has been approved. The order status is now "Cancelled".`;
     } else if (type === 'CANCEL_REJECTED') {
-        subject = '❌ Cancellation Request Update – Luxé Jewellery';
+        subject = '❌ Cancellation Request Update – Kairo Jewellery';
         headline = 'Your Cancellation Request Was Declined';
         body = `We're sorry, but your cancellation request for order <strong>#${order._id}</strong> was not approved. The order will proceed as planned. <br/><br/><strong>Admin Note:</strong> ${order.cancellation.adminNote || 'No specific reason provided.'}`;
     }
@@ -137,7 +137,7 @@ const sendOrderCancellationEmail = async (user, order, type) => {
             <table width="580" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
               <tr>
                 <td style="background:linear-gradient(135deg,#c9a96e 0%,#8b6914 100%);padding:36px 40px;text-align:center;">
-                  <h1 style="color:#ffffff;margin:0;font-size:26px;letter-spacing:2px;font-weight:700;">💎 LUXÉ JEWELLERY</h1>
+                  <h1 style="color:#ffffff;margin:0;font-size:26px;letter-spacing:2px;font-weight:700;">💎 KAIRO JEWELLERY</h1>
                 </td>
               </tr>
               <tr>
@@ -148,7 +148,7 @@ const sendOrderCancellationEmail = async (user, order, type) => {
               </tr>
               <tr>
                 <td style="background:#f9f5f0;padding:20px 40px;text-align:center;border-top:1px solid #ece8e1;">
-                  <p style="margin:0;color:#aaa;font-size:12px;">© ${new Date().getFullYear()} Luxé Jewellery. All rights reserved.</p>
+                  <p style="margin:0;color:#aaa;font-size:12px;">© ${new Date().getFullYear()} Kairo Jewellery. All rights reserved.</p>
                 </td>
               </tr>
             </table>
@@ -191,7 +191,7 @@ const sendOrderConfirmationEmail = async (user, order, pdfBuffer) => {
             <table width="580" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
               <tr>
                 <td style="background:linear-gradient(135deg,#c9a96e 0%,#8b6914 100%);padding:36px 40px;text-align:center;">
-                  <h1 style="color:#ffffff;margin:0;font-size:26px;letter-spacing:2px;font-weight:700;">💎 LUXÉ JEWELLERY</h1>
+                  <h1 style="color:#ffffff;margin:0;font-size:26px;letter-spacing:2px;font-weight:700;">💎 KAIRO JEWELLERY</h1>
                 </td>
               </tr>
               <tr>
@@ -199,7 +199,7 @@ const sendOrderConfirmationEmail = async (user, order, pdfBuffer) => {
                   <h2 style="color:#2c1810;margin:0 0 16px;font-size:24px;">Thank You so much for your order! 🙏</h2>
                   <p style="color:#555;line-height:1.8;margin:0 0 28px;font-size:16px;">Hi ${user.name},<br/><br/>
                   We are absolutely delighted to confirm your order <strong>#${order._id.toString().slice(-8).toUpperCase()}</strong>! 💎<br/><br/>
-                  At <strong>Luxé Jewellery</strong>, we strive to bring elegance and timeless beauty to your collection, and we're honored that you chose us for your purchase.</p>
+                  At <strong>Kairo Jewellery</strong>, we strive to bring elegance and timeless beauty to your collection, and we're honored that you chose us for your purchase.</p>
                   
                   <div style="background:#fdf6e3;border:2px solid #c9a96e;border-radius:12px;padding:24px;margin-bottom:28px;text-align:center;">
                     <p style="margin:0 0 8px;color:#8b6914;font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:600;">Order Total</p>
@@ -209,7 +209,7 @@ const sendOrderConfirmationEmail = async (user, order, pdfBuffer) => {
               </tr>
               <tr>
                 <td style="background:#f9f5f0;padding:20px 40px;text-align:center;border-top:1px solid #ece8e1;">
-                  <p style="margin:0;color:#aaa;font-size:12px;">© ${new Date().getFullYear()} Luxé Jewellery. All rights reserved.</p>
+                  <p style="margin:0;color:#aaa;font-size:12px;">© ${new Date().getFullYear()} Kairo Jewellery. All rights reserved.</p>
                 </td>
               </tr>
             </table>
@@ -256,7 +256,7 @@ const sendOrderStatusUpdateEmail = async (user, order) => {
         'Confirmed': { headline: 'Your Order is Confirmed! ✨', body: 'Great news! Your order has been confirmed and is now ready for processing.', color: '#50C878' },
         'Processing': { headline: 'We\'re Preparing Your Items! 🛠️', body: 'Your items are being carefully picked and packed by our master jewellers.', color: '#BB86FC' },
         'Shipped': { headline: 'Your Package is on its Way! 🚚', body: 'Exciting news! Your order has been shipped and will be with you very soon.', color: '#03DAC6' },
-        'Delivered': { headline: 'Order Delivered Successfully! 🎁', body: 'Your Luxé Jewellery package has been delivered. We hope you love your new pieces!', color: '#00E676' },
+        'Delivered': { headline: 'Order Delivered Successfully! 🎁', body: 'Your Kairo Jewellery package has been delivered. We hope you love your new pieces!', color: '#00E676' },
         'Cancelled': { headline: 'Order Cancellation Update', body: 'Your order status has been updated to "Cancelled". If you have questions, please reach out.', color: '#CF6679' }
     };
 
@@ -272,7 +272,7 @@ const sendOrderStatusUpdateEmail = async (user, order) => {
             <table width="580" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
               <tr>
                 <td style="background:linear-gradient(135deg,#c9a96e 0%,#8b6914 100%);padding:36px 40px;text-align:center;">
-                  <h1 style="color:#ffffff;margin:0;font-size:26px;letter-spacing:2px;font-weight:700;">💎 LUXÉ JEWELLERY</h1>
+                  <h1 style="color:#ffffff;margin:0;font-size:26px;letter-spacing:2px;font-weight:700;">💎 KAIRO JEWELLERY</h1>
                 </td>
               </tr>
               <tr>
@@ -291,7 +291,7 @@ const sendOrderStatusUpdateEmail = async (user, order) => {
               </tr>
               <tr>
                 <td style="background:#f9f5f0;padding:20px 40px;text-align:center;border-top:1px solid #ece8e1;">
-                  <p style="margin:0;color:#aaa;font-size:12px;">© ${new Date().getFullYear()} Luxé Jewellery. All rights reserved.</p>
+                  <p style="margin:0;color:#aaa;font-size:12px;">© ${new Date().getFullYear()} Kairo Jewellery. All rights reserved.</p>
                 </td>
               </tr>
             </table>
@@ -392,7 +392,7 @@ const sendCouponAnnouncementEmail = async (user, coupon) => {
             <table width="580" cellpadding="0" cellspacing="0" style="background:#1a1a1a;border:1px solid #333;border-radius:24px;overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,0.5);">
               <tr>
                 <td style="background:linear-gradient(135deg,#c9a96e 0%,#8b6914 100%);padding:40px;text-align:center;">
-                  <h1 style="color:#ffffff;margin:0;font-size:28px;letter-spacing:4px;font-weight:800;text-transform:uppercase;">💎 Luxé Exclusive</h1>
+                  <h1 style="color:#ffffff;margin:0;font-size:28px;letter-spacing:4px;font-weight:800;text-transform:uppercase;">💎 Kairo Exclusive</h1>
                 </td>
               </tr>
               <tr>
@@ -423,7 +423,7 @@ const sendCouponAnnouncementEmail = async (user, coupon) => {
             body: JSON.stringify({
                 sender: { name: "Kairo Jewellery", email: process.env.EMAIL_FROM },
                 to: [{ email: user.email }],
-                subject: `🎁 A Special Gift: ${discountText} at Luxé Jewellery`,
+                subject: `🎁 A Special Gift: ${discountText} at Kairo Jewellery`,
                 htmlContent: html
             })
         });

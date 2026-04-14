@@ -31,7 +31,7 @@ const generateInvoicePDF = (order) => {
 
             // Sold By (Left Side)
             doc.fontSize(10).font('Helvetica-Bold').text('Sold By:', 40, startY);
-            doc.font('Helvetica').text('LUXÉ JEWELLERY PRIVATE LIMITED', 40, startY + 15);
+            doc.font('Helvetica').text('KAIRO JEWELLERY PRIVATE LIMITED', 40, startY + 15);
             doc.text('123, Diamond Avenue, Surat,', 40, startY + 28);
             doc.text('Gujarat, India - 395006', 40, startY + 41);
             doc.text('GST Registration No: 24AAACL1234A1Z5', 40, startY + 54);
@@ -128,7 +128,7 @@ const generateInvoicePDF = (order) => {
             // --- SIGNATURE FOOTER ---
             const footerY = 700;
             doc.rect(350, footerY, 205, 80).strokeColor(borderColor).stroke();
-            doc.fontSize(9).font('Helvetica-Bold').text('For LUXÉ JEWELLERY PRIVATE LIMITED:', 360, footerY + 10);
+            doc.fontSize(9).font('Helvetica-Bold').text('For KAIRO JEWELLERY PRIVATE LIMITED:', 360, footerY + 10);
             
             // Signature placeholder or stamp text
             doc.moveDown(2);

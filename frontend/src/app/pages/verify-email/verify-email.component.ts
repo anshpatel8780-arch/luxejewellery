@@ -54,7 +54,7 @@ import { AuthService } from '../../services/auth.service';
         <div *ngIf="verified" class="done-state">
           <div class="done-icon">🎉</div>
           <h2>Email Verified!</h2>
-          <p>Your Luxé account is now active. Enjoy exploring our exclusive collection.</p>
+          <p>Your Kairo account is now active. Enjoy exploring our exclusive collection.</p>
           <a routerLink="/login" class="btn btn-primary">Sign In Now →</a>
         </div>
 
