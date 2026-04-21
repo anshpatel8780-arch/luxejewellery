@@ -406,9 +406,9 @@ import { Product, Order, User, OrderStats, Coupon } from '../../models/product.m
                 </thead>
                 <tbody>
                   <tr *ngFor="let c of cancellationRequests">
-                    <td class="id-cell">#{{c.orderId.substring(c.orderId.length-8)}}</td>
-                    <td class="reason-cell">"{{c.reason}}"</td>
-                    <td>{{c.requestedAt | date}}</td>
+                    <td class="id-cell">#{{c._id.substring(c._id.length-8)}}</td>
+                    <td class="reason-cell">"{{c.cancellation?.reason}}"</td>
+                    <td>{{c.cancellation?.requestedAt | date}}</td>
                     <td class="actions wide">
                       <button class="btn-approve" (click)="processRequest(c._id, 'Approved')">Approve</button>
                       <button class="btn-reject" (click)="processRequest(c._id, 'Rejected')">Reject</button>
@@ -778,6 +778,27 @@ import { Product, Order, User, OrderStats, Coupon } from '../../models/product.m
     }
     .btn-save:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(212, 175, 55, 0.4); background: #f1d592; }
     .btn-save:disabled { background: #333; border-color: #444; color: #666; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* Action Buttons */
+    .actions { display: flex; gap: 10px; align-items: center; }
+    .actions.wide { gap: 15px; }
+    .actions button { 
+      background: none; border: none; color: #888; cursor: pointer; transition: 0.3s; font-size: 1.1rem;
+    }
+    .actions button:hover { color: #D4AF37; }
+    .actions button.delete:hover { color: #ff4444; }
+    
+    .btn-approve {
+      background: rgba(80, 200, 120, 0.1); color: #50C878; border: 1px solid rgba(80, 200, 120, 0.3);
+      padding: 6px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.3s;
+    }
+    .btn-approve:hover { background: #50C878; color: #000; box-shadow: 0 4px 15px rgba(80, 200, 120, 0.3); }
+
+    .btn-reject {
+      background: rgba(231, 76, 60, 0.1); color: #e74c3c; border: 1px solid rgba(231, 76, 60, 0.3);
+      padding: 6px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.3s;
+    }
+    .btn-reject:hover { background: #e74c3c; color: #000; box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3); }
 
      /* Dashboard Analytics */
     .analytics-loading, .no-data-placeholder { 
